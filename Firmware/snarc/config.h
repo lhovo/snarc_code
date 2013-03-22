@@ -25,8 +25,8 @@
 
 // ------ Set RFID Input ------
 #define RFID_125MHZ_SOFTSERIAL
-#define RFID_RX_PIN 14
-#define RFID_TX_PIN 15
+#define RFID_RX_PIN 15
+#define RFID_TX_PIN 14
 
 // ------ Memory Storage ------
 #define USE_EEPROM

@@ -23,21 +23,29 @@
 #include "config.h"
 #include <SoftwareSerial.h>
 
-#ifndef RFID_SEEED_RX
-#define RFID_SEEED_RX 14
+#ifndef RFID_RX_PIN
+#define RFID_RX_PIN 15
 #endif
 
-#ifndef RFID_SEEED_TX
-#define RFID_SEEED_TX 15
+#ifndef RFID_TX_PIN
+#define RFID_TX_PIN 14
 #endif
+
+struct RFIDTag {
+	int mfr;         // Manufacturer (?) Code (2 bytes), only useful in UART Mode
+	long id;         // Tag ID (3 bytes)
+	byte chk;        // Checksum (1 byte), only useful in UART Mode
+	boolean valid;   // Validity of the Tag, based on the Checksum (UART Mode) or the parity bits (Wiegand Mode)
+	char raw[13];    // The whole tag as a raw string, only useful in UART Mode
+};
 
 class RFID_SEEED_125
 {
     public:
         void init(void);
-        int  read(char *last_code);
-        
+        boolean read(unsigned long *last_code);
     private:
+        long hex2dec(String hexCode);
         void clear(void);
 };
 

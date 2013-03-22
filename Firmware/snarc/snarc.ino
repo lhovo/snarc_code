@@ -10,42 +10,57 @@ void setup()
     
     Serial.begin(19200);
     
-    MENU.display();
+//    MENU.display();
 
-    attachInterrupt(INT_USER, blink, CHANGE);
+    attachInterrupt(INT_USER, userInterupt, CHANGE);
 }
 
 void loop()
 {
-    char RFID_Tag[MEMORY_RFID_LENGTH];
-//    int i;
-//    
-//    for(i=0;i<255;i+=5)
+    unsigned long rfidTag;
+    
+    if(RFID.read(&rfidTag))
+    {
+        Serial.println(rfidTag);
+        LEDS.blink(LEDS_GREEN);
+    }
+//    else
 //    {
-//      LEDS.pwm(LEDS_RED, i);
-//      delay(30);
+//     Serial.println("nope :("); 
 //    }
-//    for(i=255;i>0;i-=5)
-//    {
-//      LEDS.pwm(LEDS_RED, i);
-//      delay(30);
-//    }
+}
+
+void led_test()
+{
+    int i, j;
+    int led[4] = {LEDS_RED, LEDS_YELLOW, LEDS_GREEN, LEDS_ALL};
+    
+    for(j=0;j<4;j++)
+    {
+      for(i=0;i<=255;i+=3)
+      {
+        LEDS.pwm(led[j], i);
+        delay(30);
+      }
+      for(i=255;i>=0;i-=3)
+      {
+        LEDS.pwm(led[j], i);
+        delay(30);
+      }
+    }
+    
     LEDS.blink(LEDS_RED);
     delay(400);
     LEDS.blink(LEDS_YELLOW);
     delay(400);
+    LEDS.blink(LEDS_GREEN);
+    delay(400);
     LEDS.blink(LEDS_ALL);
     delay(1000);
     LEDS.off(LEDS_ALL);
-    
-    if(RFID.read(RFID_Tag))
-    {
-        Serial.print("Found tag:");
-        Serial.println(RFID_Tag);
-    }
 }
 
-void blink()
+void userInterupt()
 {
-    //state = !state;
+  
 }

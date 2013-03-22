@@ -23,7 +23,7 @@
 
 #define LED_PIN_RED    5
 #define LED_PIN_YELLOW 6
-#define LED_PIN_GREEN  10
+#define LED_PIN_GREEN  9
 
 #ifndef LEDS_RED
 #define LEDS_RED    1
