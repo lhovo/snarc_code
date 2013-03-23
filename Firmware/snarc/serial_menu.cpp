@@ -73,7 +73,7 @@ void SERIAL_MENU::display(void)
                         //Serial.println(send_to_server("1234567890", 0));
                         prompt();
                         break;
-#ifdef CLIENT
+                        
                     // Set Mac Address
                     case 'm':
                         Serial.println(F("disabled in implementation sorry ( buggy ) , use hardcode MACs only."));
@@ -89,22 +89,10 @@ void SERIAL_MENU::display(void)
                         // TODO: Implement IP address change
                         prompt();
                         break;
-#endif
+                        
                     // Set Device Name
                     case 'd':
                         listen_for_device_name();
-                        prompt();
-                        break;
-                        
-// w means "write" initial LIST to EEPROM cache - undocumented command for initial population of eeprom only during transition.
-                    case 'w':
-                        // generally yuou should do the 'i' before 'w'
-                        // Serial.println(F("please wait, erase in progress...."));
-                        // init_eeprom();
-//                        Serial.println(F("please wait, writing codes...."));
-//                        write_codes_to_memory();
-//                        Serial.print(F("address:"));
-//                        Serial.println(last_address);
                         prompt();
                         break;
                     
@@ -191,15 +179,14 @@ void SERIAL_MENU::prompt(void)
     Serial.println(F("PROGRAM MODE:"));
     Serial.println(F("r - read eeprom list"));
     Serial.println(F("n - program new key to EEPROM"));
-    Serial.println(F("s - test server interface ( sends fake tag 1234567890 to server ) "));
-    Serial.println(F("d - set device name"));
+    Serial.println(F("t - test server interface ( sends fake tag 1234567890 to server ) "));
     Serial.println(F("i - wipe and initialise EEPROM (dangerous!) "));
-    Serial.println(F("w - write hard-coded tags to EEPROM (dangerous!)"));
     Serial.println(F("z - delete a single card from EEPROM"));
-#ifdef CLIENT
+    
+    Serial.println(F("d - set device name"));
     Serial.println(F("m - set/reset MAC address"));
     Serial.println(F("a - set device IP address"));
-#endif
+    Serial.println(F("s - save server changes"));
     Serial.println();
     Serial.println(F("x - exit programming mode"));
 }
@@ -220,15 +207,15 @@ void SERIAL_MENU::listen_for_device_name(void)
     int  i;
             
     Serial.print(F("Current device name is: "));
-    if(MEMORY.get_device_name(serial_recieve_data))
-    {
-        Serial.print(serial_recieve_data);
-        Serial.println();
-    }
-    else
-    {
-        Serial.println(F("Failed to get device name"));
-    }
+//    if(MEMORY.get_device_name(serial_recieve_data))
+//    {
+//        Serial.print(serial_recieve_data);
+//        Serial.println();
+//    }
+//    else
+//    {
+//        Serial.println(F("Failed to get device name"));
+//    }
    
     Serial.print(F("Enter new device name (max "));
     Serial.print(MEMORY_DEVICE_NAME_MAX_LENGTH);
@@ -270,7 +257,7 @@ void SERIAL_MENU::listen_for_device_name(void)
             serial_recieve_data[i] = '\0';
         }
         
-        MEMORY.set_device_name(serial_recieve_data);
+//        MEMORY.set_device_name(serial_recieve_data);
         // Echo & save new name
         Serial.print(F("Device name set to: "));
         Serial.print(serial_recieve_data);

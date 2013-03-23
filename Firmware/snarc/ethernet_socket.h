@@ -20,13 +20,24 @@
 #define __ETHERNET_SOCKET_H__
 
 #include "Arduino.h"
+#include "config.h"
 #include <IPAddress.h>
+#include <Ethernet.h>
+
+
+byte mac[] = { 0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED };
+
+#define SERVERIP_1 10
+#define SERVERIP_2 0
+#define SERVERIP_3 1
+#define SERVERIP_4 253
 
 class ETHERNET_SOCKET
 {
     public:
-        void init(void);
-        
+        void init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server);
+        boolean check_connection();
+        int check_tag(long tag, int door);
     private:
 };
 

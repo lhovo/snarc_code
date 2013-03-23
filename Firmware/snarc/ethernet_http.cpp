@@ -33,10 +33,91 @@
 /******************************************************************************
  * User API
  ******************************************************************************/
- 
-void ETHERNET_HTTP::init(void)
-{
+IPAddress http_serverIP;
 
+void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server)
+{
+    delay(1000);   // delay boot by another precautionary 1sec to allow power rail time to stabilise, etc ( ethernet module draws mucho powero ) 
+    Ethernet.begin(mac,ip,gateway,subnet);
+    http_serverIP = server;
+}
+
+boolean ETHERNET_HTTP::check_connection()
+{
+   return false; 
+}
+
+int ETHERNET_HTTP::check_tag(long tag, int door)
+{
+   EthernetClient client;
+   int client_recieve_pointer = 0, x = 0;
+   char client_recieve_data[32];
+
+   if (client.connect(http_serverIP,80))
+   {
+  	Serial.println(F("http client connected"));
+  	client.print("GET /logger.php?secret=asecret&q=");
+  	client.print(tag);
+  	client.print("&d=");
+  	client.println(door);
+  	client.println();
+  	Serial.println(F("http client finished"));
+    }
+    else
+    {
+	Serial.println(F("http connection failed"));
+	return -1; // error code to say server offline, which is different to "0" , which means deny access.
+    }
+    
+    // delay some arbitrary amount for the server to respond to the client. say, 1 sec. ?
+    delay(3000);
+    
+    for (x=0;x<=32;x++)  //client_recieve_data is only 32 bytes long.
+    {
+        if (client.available())
+        {
+            char c = client.read();
+            client_recieve_data[client_recieve_pointer++] = c; //client.read();
+        }
+
+        // if the server's disconnected, stop the client:
+        if (!client.connected())
+        {
+            Serial.println(F("client.stop"));
+            client.stop();
+       	    break;
+        }
+    }
+    
+    if ( x >= 32 )
+    {
+        Serial.println(F("too much HTTP data, error! ( do you have an auth.php on the server? ) "));
+        return -1;
+    }
+
+    client_recieve_pointer = 0;
+    // if the server's disconnected, stop the client:
+    Serial.print(F("http data:"));
+    // recieved data is now in the string: client_recieve_data
+    Serial.println(client_recieve_data);
+    
+    // we expect the permissions string to look like 'access:3' ( for permit ), or 'access:0' (for deny )
+    String Permissions =  String(client_recieve_data);
+    
+    int colonPosition = Permissions.indexOf(':');
+
+    String scs = Permissions.substring(colonPosition + 1);  // as a "String" "object" starting from after the colon to the end!
+    char cs[10];
+    scs.toCharArray(cs,10); // same this as a char array "string" ( lower case)
+    Serial.print(F("perms from server:"));
+    Serial.println(cs);
+    int ci = atoi(cs); // as an int!  if this fails, it returns zero, which means no-access, so that's OK.
+    
+    // basic bound check,  return -1 on error .
+    if ( ci < 0 || ci > 255 ) {
+       return -1;   
+    }
+    return ci;
 }
 
 ETHERNET_HTTP ethernetHttp;

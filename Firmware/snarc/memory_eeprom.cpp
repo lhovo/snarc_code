@@ -39,32 +39,32 @@ void MEMORY_EEPROM::init(void)
 
 }
 
-bool MEMORY_EEPROM::store_network_info(IPAddress *ip, IPAddress *gateway, IPAddress *subnet)
+bool MEMORY_EEPROM::store_network_info(DeviceInfo *device)
+{
+    unsigned int i;
+    for(i=0;i<sizeof(DeviceInfo);i++)
+    {
+       EEPROM.write(i, ((byte*) device)[i]);
+    }
+    return true;
+}
+
+bool MEMORY_EEPROM::get_network_info(DeviceInfo *device)
+{
+    unsigned int i;
+    for(i=0;i<sizeof(DeviceInfo);i++)
+    {
+      ((byte*) device)[i] = EEPROM.read(i);
+    }
+    return true;
+}
+
+bool MEMORY_EEPROM::store_access(long rfid, time_t expiration)
 {
     return true;
 }
 
-bool MEMORY_EEPROM::get_network_info(IPAddress *ip, IPAddress *gateway, IPAddress *subnet)
-{
-    return true;
-}
-
-bool MEMORY_EEPROM::store_access(char *rfid, time_t expiration)
-{
-    return true;
-}
-
-bool MEMORY_EEPROM::find_access(char *rfid)
-{
-    return true;
-}
-
-bool MEMORY_EEPROM::set_device_name(char *name)
-{
-    return true;
-}
-
-bool MEMORY_EEPROM::get_device_name(char *device)
+bool MEMORY_EEPROM::grant_access(long rfid)
 {
     return true;
 }

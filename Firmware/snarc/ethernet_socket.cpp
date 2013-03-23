@@ -35,9 +35,24 @@
  * User API
  ******************************************************************************/
  
-void ETHERNET_SOCKET::init(void)
+ IPAddress server_socketIP;
+ 
+void ETHERNET_SOCKET::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server)
 {
+    delay(1000);   // delay boot by another precautionary 1sec to allow power rail time to stabilise, etc ( ethernet module draws mucho powero ) 
+    Ethernet.begin(mac,ip,gateway,subnet);
+    server_socketIP = server;
+}
 
+boolean ETHERNET_SOCKET::check_connection()
+{
+   return false; 
+}
+
+int ETHERNET_SOCKET::check_tag(long tag, int door)
+{
+   EthernetClient client;
+   return 0;
 }
 
 ETHERNET_SOCKET ethernetSocket;

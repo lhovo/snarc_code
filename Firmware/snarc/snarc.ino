@@ -1,18 +1,29 @@
 #include <SoftwareSerial.h>
+#include <Ethernet.h>
+#include <SPI.h>
+#include <EEPROM.h>
 #include "config.h"
 #include <Time.h>
 
 void setup()
-{
+{ 
+    DeviceInfo mySettings;
+  
     LEDS.init();
     RFID.init();
     RFID.reading_callback(rfid_alert_user);
     MEMORY.init();
-    
+    if(MEMORY.get_network_info(&mySettings))
+    {
+        ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
+    }
+    else
+    {
+       Serial.println( "Failed to get settings from MEMORY, ETHERNET not initialised" );
+    }
     Serial.begin(19200);
     
 //    MENU.display();
-
     attachInterrupt(INT_USER, userInterupt, CHANGE);
 }
 
@@ -26,11 +37,6 @@ void loop()
         LEDS.blink(LEDS_GREEN);
     }
     LEDS.off(LEDS_RED);
-    
-//    else
-//    {
-//     Serial.println("nope :("); 
-//    }
 }
 
 void rfid_alert_user()

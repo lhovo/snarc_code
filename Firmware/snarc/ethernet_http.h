@@ -20,13 +20,16 @@
 #define __ETHERNET_HTTP_H__
 
 #include "Arduino.h"
+#include "config.h"
 #include <IPAddress.h>
+#include <Ethernet.h>
 
 class ETHERNET_HTTP
 {
     public:
-        void init(void);
-        
+        void init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server);
+        boolean check_connection();
+        int check_tag(long tag, int door);
     private:
 };
 

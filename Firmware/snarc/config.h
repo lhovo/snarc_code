@@ -32,6 +32,11 @@
 #define USE_EEPROM
 //#define USE_FLASH_AT45DB
 
+// ------ Ethernet Protocol ------
+#define USE_ETHERNET_HTTP
+//#define USE_ETHERNET_SOCKET
+//#define USE_ETHERNET_HTTP_SERVER
+
 #define MEMORY_DEVICE_NAME_MAX_LENGTH 12   // Maximum length of the device name
 #define MEMORY_RFID_LENGTH            10+1 // +1 for the string end
 
@@ -45,6 +50,7 @@
  */
 
 // --- Setup LED Defines ---
+// Though you may have less colours define them anyway
 #define LEDS_RED    1
 #define LEDS_YELLOW 2
 #define LEDS_GREEN  4
@@ -53,14 +59,28 @@
 #include "serial_menu.h"
 #define MENU SNARC_SERIAL_MENU
 
+// --- Include Door code ---
+#include "door_actuator.h"
+
 // --- SNARC_PLUS Board Config ---
 #ifdef SNARC_PLUS
     #include "leds_snarc_plus.h"
     #define LEDS         SNARCPlusLEDS
-    #define DISPLAY_LEDS SNARCPlusLEDS
+//    #define DISPLAY_LEDS SNARCPlusLEDS // Need to thiank about this somemore, thinking about I2C interface
+
+    #define ETHERNET_CS        4
+    #define ETHERNET_RESET_PIN 7
+    #define AT45DB_CS          17
 
     #define INT_ETHERNET 0
     #define INT_USER     1
+#elif defined SNARC
+    #include "leds_snarc.h"
+    #define LEDS         SNARC_LEDS
+    
+    #define ETHERNET_CS 10
+#else
+    #error No Board Defined!
 #endif
 
 // --- Include RFID driver ---
@@ -83,8 +103,18 @@
     #error NO MEMORY DEFINED
 #endif
 
-// --- Include Door code ---
-#include "door_actuator.h"
+// --- Specify Ethernet Protocol ---
+#ifdef USE_ETHERNET_HTTP
+    #include "ethernet_http.h"
+    #define ETHERNET ethernetHttp
+#elif defined USE_ETHERNET_SOCKET
+    #include "ethernet_socket.h"
+    #define ETHERNET ethernetSocket
+//#elif defined USE_ETHERNET_HTTP_SERVER
+
+#else
+    #error NO MEMORY DEFINED
+#endif
 
 
 // Workaround for http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34734
