@@ -43,11 +43,20 @@ struct RFIDTag {
 	char raw[13];    // The whole tag as a raw string, only useful in UART Mode
 };
 
+typedef void (*card_callback_t)(void);
+
 class RFID_SEEED_125
 {
     public:
         void init(void);
+        
+        // Try read a RFID Tag, last_code will be updated if tag found
+        // Returns True on successful tag read, False otherwise
         boolean read(unsigned long *last_code);
+        
+        // Register a user callback function to allow us to blink some leds or something before the card has finished being read.
+        // This is totaly optional and only saves a fraction of a second.
+        void reading_callback(card_callback_t card_read);
     private:
         long hex2dec(String hexCode);
         void clear(void);

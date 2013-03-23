@@ -6,6 +6,7 @@ void setup()
 {
     LEDS.init();
     RFID.init();
+    RFID.reading_callback(rfid_alert_user);
     MEMORY.init();
     
     Serial.begin(19200);
@@ -24,10 +25,17 @@ void loop()
         Serial.println(rfidTag);
         LEDS.blink(LEDS_GREEN);
     }
+    LEDS.off(LEDS_RED);
+    
 //    else
 //    {
 //     Serial.println("nope :("); 
 //    }
+}
+
+void rfid_alert_user()
+{
+  LEDS.on(LEDS_RED);
 }
 
 void led_test()

@@ -38,10 +38,12 @@ long hex2dec(String hexCode);
 
 // We don't care about sending data on this device so give a random TX value
 SoftwareSerial RFID_SEED_125_Serial(RFID_RX_PIN, RFID_TX_PIN); // RX, TX
+card_callback_t reading_card;
  
 void RFID_SEEED_125::init(void)
 {
     RFID_SEED_125_Serial.begin(RFID_BAUD_RATE);
+    reading_card = NULL;
 }
 
 boolean RFID_SEEED_125::read(unsigned long *last_code)
@@ -61,6 +63,11 @@ boolean RFID_SEEED_125::read(unsigned long *last_code)
         tag.id    = 0;
         tag.chk   = 0;
         
+        if(reading_card != NULL)
+        {
+          reading_card();
+        }
+        
         timeout = 0;
         while(!RFID_SEED_125_Serial.available() && (timeout++ < RFID_TIMEOUT_COUNT)){}
         if(timeout >= RFID_TIMEOUT_COUNT) { return false; }
@@ -76,7 +83,6 @@ boolean RFID_SEEED_125::read(unsigned long *last_code)
         }
         // ID completely read
         byte checksum = 0;
-        byte value = 0;
         String id = tag.raw;
     
         tag.mfr = hex2dec(id.substring(0,4));
@@ -104,6 +110,11 @@ boolean RFID_SEEED_125::read(unsigned long *last_code)
     }
   }
   return tag.valid;
+}
+
+void RFID_SEEED_125::reading_callback(card_callback_t card_read)
+{
+  reading_card = card_read;
 }
 
 // Convert a HEX String to a decimal value (up to 8 bytes (16 hex characters))
