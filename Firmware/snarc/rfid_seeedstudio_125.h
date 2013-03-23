@@ -31,6 +31,10 @@
 #define RFID_TX_PIN 14
 #endif
 
+#ifndef RFID_BAUD_RATE
+#define RFID_BAUD_RATE 9600
+#endif
+
 struct RFIDTag {
 	int mfr;         // Manufacturer (?) Code (2 bytes), only useful in UART Mode
 	long id;         // Tag ID (3 bytes)

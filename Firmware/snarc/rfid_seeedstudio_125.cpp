@@ -41,7 +41,7 @@ SoftwareSerial RFID_SEED_125_Serial(RFID_RX_PIN, RFID_TX_PIN); // RX, TX
  
 void RFID_SEEED_125::init(void)
 {
-    RFID_SEED_125_Serial.begin(9600);
+    RFID_SEED_125_Serial.begin(RFID_BAUD_RATE);
 }
 
 boolean RFID_SEEED_125::read(unsigned long *last_code)
@@ -57,22 +57,22 @@ boolean RFID_SEEED_125::read(unsigned long *last_code)
     if((in = RFID_SEED_125_Serial.read()) == 0x02)
     {
         bytesRead = 0;
-        tag.mfr = 0;
-        tag.id=0;
-        tag.chk=0;
+        tag.mfr   = 0;
+        tag.id    = 0;
+        tag.chk   = 0;
         
         timeout = 0;
         while(!RFID_SEED_125_Serial.available() && (timeout++ < RFID_TIMEOUT_COUNT)){}
-        if(timeout >= RFID_TIMEOUT_COUNT) { Serial.println("timeout"); return false; }
+        if(timeout >= RFID_TIMEOUT_COUNT) { return false; }
         
-        in = RFID_SEED_125_Serial.read();
-        while(in != 0x03)
+        
+        while((in = RFID_SEED_125_Serial.read()) != 0x03)
         {
           tag.raw[bytesRead++] = in;
+          
           timeout = 0;
           while(!RFID_SEED_125_Serial.available() && (timeout++ < RFID_TIMEOUT_COUNT)){}
           if(timeout >= RFID_TIMEOUT_COUNT) { return false; }
-          in = RFID_SEED_125_Serial.read();
         }
         // ID completely read
         byte checksum = 0;
