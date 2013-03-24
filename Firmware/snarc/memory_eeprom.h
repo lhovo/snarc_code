@@ -19,8 +19,8 @@
 #ifndef __MEMORY_EEPROM_H__
 #define __MEMORY_EEPROM_H__
 
-#include "Arduino.h"
 #include "config.h"
+#include "Arduino.h"
 #include <IPAddress.h>
 #include <Time.h>
 #include <EEPROM.h>
@@ -53,6 +53,8 @@ struct DeviceInfo {
 
 class MEMORY_EEPROM
 {
+    boolean defaultCalled;
+  
     public:
         void init(void);
         bool store_network_info(DeviceInfo *device);
@@ -66,6 +68,7 @@ class MEMORY_EEPROM
         bool erase_access_list(void);
         
     private:
+        void defaultOutput(boolean isStart);
 };
 
 extern MEMORY_EEPROM eepromMemory;
