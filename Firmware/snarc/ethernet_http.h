@@ -26,6 +26,8 @@
 
 class ETHERNET_HTTP
 {
+    IPAddress serverIP;
+    
     public:
         void init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server);
         boolean check_connection();

@@ -35,10 +35,8 @@ long hex2dec(String hexCode);
 /******************************************************************************
  * User API
  ******************************************************************************/
-
-// We don't care about sending data on this device so give a random TX value
-SoftwareSerial RFID_SEED_125_Serial(RFID_RX_PIN, RFID_TX_PIN); // RX, TX
-card_callback_t reading_card;
+ 
+SoftwareSerial RFID_SEED_125_Serial(RFID_RX_PIN, RFID_TX_PIN);
  
 void RFID_SEEED_125::init(void)
 {

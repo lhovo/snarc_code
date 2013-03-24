@@ -43,6 +43,8 @@
 
 class SNARC_PLUS_LEDS
 {
+    unsigned char leds, invert; 
+    
     public:
         void init(void);
         

@@ -47,6 +47,8 @@ typedef void (*card_callback_t)(void);
 
 class RFID_SEEED_125
 {
+    card_callback_t reading_card;
+
     public:
         void init(void);
         

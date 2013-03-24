@@ -33,13 +33,12 @@
 /******************************************************************************
  * User API
  ******************************************************************************/
-IPAddress http_serverIP;
 
 void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server)
 {
     delay(1000);   // delay boot by another precautionary 1sec to allow power rail time to stabilise, etc ( ethernet module draws mucho powero ) 
     Ethernet.begin(mac,ip,gateway,subnet);
-    http_serverIP = server;
+    serverIP = server;
 }
 
 boolean ETHERNET_HTTP::check_connection()
@@ -53,7 +52,7 @@ int ETHERNET_HTTP::check_tag(long tag, int door)
    int client_recieve_pointer = 0, x = 0;
    char client_recieve_data[32];
 
-   if (client.connect(http_serverIP,80))
+   if (client.connect(serverIP,80))
    {
   	Serial.println(F("http client connected"));
   	client.print("GET /logger.php?secret=asecret&q=");
