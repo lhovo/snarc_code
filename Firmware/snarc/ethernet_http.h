@@ -19,8 +19,28 @@
 #ifndef __ETHERNET_HTTP_H__
 #define __ETHERNET_HTTP_H__
 
-#include "Arduino.h"
 #include "config.h"
+
+#ifdef ETHERNET_CS
+  #if ETHERNET_CS < 8
+    #define W5200_CS_PIN  _BV(ETHERNET_CS)
+    #define W5200_CS_DDR  DDRD
+    #define W5200_CS_PORT PORTD
+  #elif ETHERNET_CS < 14
+    #define W5200_CS_PIN  _BV(ETHERNET_CS-7)
+    #define W5200_CS_DDR  DDRB
+    #define W5200_CS_PORT PORTB
+  #elif ETHERNET_CS < 20
+    #define W5200_CS_PIN  _BV(ETHERNET_CS-13)
+    #define W5200_CS_DDR  DDRC
+    #define W5200_CS_PORT PORTC
+  #else
+    #error Unknown Ethernet Chip Select Pin
+  #endif
+#endif
+
+#include "Arduino.h"
+#include <Dns.h>
 #include <IPAddress.h>
 #include <Ethernet.h>
 
