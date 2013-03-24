@@ -19,6 +19,7 @@
 #ifndef __RTC_H__
 #define __RTC_H__
 
+#include "config.h"
 #include "Arduino.h"
 #include <IPAddress.h>
 

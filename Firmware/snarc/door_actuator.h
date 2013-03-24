@@ -19,8 +19,8 @@
 #ifndef __DOOR_ACTUATE_H__
 #define __DOOR_ACTUATE_H__
 
-#include "Arduino.h"
 #include "config.h"
+#include "Arduino.h"
 
 #ifndef DOOR_PIN
 #define DOOR_PIN 5

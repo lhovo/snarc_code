@@ -32,6 +32,9 @@
 #define USE_EEPROM
 //#define USE_FLASH_AT45DB
 
+// ------ Door Settings ------
+// #define DOOR_INVERT_PIN
+
 // ------ Ethernet Protocol ------
 #define USE_ETHERNET_HTTP
 //#define USE_ETHERNET_SOCKET
@@ -39,10 +42,6 @@
 
 #define MEMORY_DEVICE_NAME_MAX_LENGTH 12   // Maximum length of the device name
 #define MEMORY_RFID_LENGTH            10+1 // +1 for the string end
-
-// ------ Door Settings ------
-// #define DOOR_INVERT_PIN
-#define DOOR_PIN 5
 
 /* -------------------------------------
  *      END OF USER CONFIG OPTIONS
@@ -59,29 +58,34 @@
 #include "serial_menu.h"
 #define MENU SNARC_SERIAL_MENU
 
-// --- Include Door code ---
-#include "door_actuator.h"
-
 // --- SNARC_PLUS Board Config ---
 #ifdef SNARC_PLUS
     #include "leds_snarc_plus.h"
     #define LEDS         SNARCPlusLEDS
 //    #define DISPLAY_LEDS SNARCPlusLEDS // Need to thiank about this somemore, thinking about I2C interface
 
-    #define ETHERNET_CS        4
+    #define ETHERNET_CS        4  /* I need to find some way of passing this to the driver, presently includes arnt working */
     #define ETHERNET_RESET_PIN 7
     #define AT45DB_CS          17
 
-    #define INT_ETHERNET 0
-    #define INT_USER     1
+    #define INT_ETHERNET       0
+    #define INT_USER           1
+    
+    #define DOOR_PIN           8 //5
+
 #elif defined SNARC
     #include "leds_snarc.h"
     #define LEDS         SNARC_LEDS
+    
+    #define DOOR_PIN    5
     
     #define ETHERNET_CS 10
 #else
     #error No Board Defined!
 #endif
+
+// --- Include Door code ---
+#include "door_actuator.h"
 
 // --- Include RFID driver ---
 #ifdef RFID_125MHZ_SOFTSERIAL

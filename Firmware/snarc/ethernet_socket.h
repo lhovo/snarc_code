@@ -19,8 +19,8 @@
 #ifndef __ETHERNET_SOCKET_H__
 #define __ETHERNET_SOCKET_H__
 
-#include "Arduino.h"
 #include "config.h"
+#include "Arduino.h"
 #include <IPAddress.h>
 #include <Ethernet.h>
 

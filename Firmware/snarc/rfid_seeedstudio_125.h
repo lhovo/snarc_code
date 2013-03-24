@@ -19,8 +19,8 @@
 #ifndef __RFID_125_SEEDSTUDIO_H__
 #define __RFID_125_SEEDSTUDIO_H__
 
-#include "Arduino.h"
 #include "config.h"
+#include "Arduino.h"
 #include <SoftwareSerial.h>
 
 #ifndef RFID_RX_PIN
@@ -48,7 +48,7 @@ typedef void (*card_callback_t)(void);
 class RFID_SEEED_125
 {
     card_callback_t reading_card;
-
+    
     public:
         void init(void);
         
