@@ -36,12 +36,13 @@
 #define MEMORY_HEADER_LEN 50
 
 struct DeviceInfo {
-  IPAddress ip;        // IP address of this device
-  IPAddress gateway;   // Gateway to the Internet
-  IPAddress subnet;    // Subnet Mask
-  IPAddress server;    // IP address of the authentication server
-  byte      mac[6];    // Mac address of this device
-  char      deviceName[MEMORY_DEVICE_NAME_MAX_LENGTH]; // Name/Location of this device
+  IPAddress     ip;        // IP address of this device
+  IPAddress     gateway;   // Gateway to the Internet
+  IPAddress     subnet;    // Subnet Mask
+  IPAddress     server;    // IP address of the authentication server
+  byte          mac[6];    // Mac address of this device
+  char          deviceName[MEMORY_DEVICE_NAME_MAX_LENGTH]; // Name/Location of this device
+  unsigned int  id;        // Device unique id
 };
 
 // Due to the preproccesor unable to calculate the sizeof(DeviceInfo) we have to do it manualy

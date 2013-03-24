@@ -15,8 +15,10 @@ void setup()
     RFID.reading_callback(rfid_alert_user);
     MEMORY.init();
     MEMORY.get_network_info(&mySettings);
-    Serial.print(F("Starting with name: "));
-    Serial.println(mySettings.deviceName);
+    Serial.print(F("Device name: "));
+    Serial.print(mySettings.deviceName);
+    Serial.print(" id:");
+    Serial.println(mySettings.id);
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     
 //    MENU.display();

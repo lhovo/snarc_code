@@ -35,6 +35,7 @@ class SERIAL_MENU
         void write_codes_to_memory(void);
         void clear_serial_buffer(void);
         void listen_for_device_name(char *deviceName);
+        void listen_for_device_id(unsigned int *deviceId);
         void listen_for_ipaddress(IPAddress *change);
 };
 

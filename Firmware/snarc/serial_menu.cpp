@@ -37,8 +37,7 @@
 void SERIAL_MENU::init(int baud)
 {
   Serial.begin(baud);
-  changesMade = false;
-  Serial.println("To enter program mode type '+++'");
+  Serial.println("To enter program mode type '+++'\n");
 }
 
 void SERIAL_MENU::check(void)
@@ -67,6 +66,7 @@ void SERIAL_MENU::display(void)
     DeviceInfo mySettings;
     IPAddress tempIP;
     MEMORY.get_network_info(&mySettings);
+    changesMade = false;
     
     clear_serial_buffer();
     Serial.println(F("Entered Programming Mode! "));
@@ -120,6 +120,12 @@ void SERIAL_MENU::display(void)
                 // Set Device Name
                 case 'd':
                     listen_for_device_name(mySettings.deviceName);
+                    prompt();
+                    break;
+                
+                // Set Device Id
+                case 't':
+                    listen_for_device_id(&mySettings.id);
                     prompt();
                     break;
                 
@@ -217,6 +223,7 @@ void SERIAL_MENU::prompt(void)
     Serial.println(F("z - delete a single card from EEPROM"));
     Serial.println(F("-- Options below need to be saved after change --"));
     Serial.println(F("d - set device name"));
+    Serial.println(F("t - set device identification"));
     Serial.println(F("m - set MAC address"));
     Serial.println(F("i - set IP address"));
     Serial.println(F("g - set Gateway address"));
@@ -344,6 +351,12 @@ void SERIAL_MENU::listen_for_device_name(char *deviceName)
         Serial.print(F("Device name set to: "));
         Serial.println(deviceName);
     }
+}
+
+void SERIAL_MENU::listen_for_device_id(unsigned int *deviceId)
+{
+   *deviceId = 9;
+   changesMade = true;
 }
 
 void SERIAL_MENU::clear_serial_buffer(void)

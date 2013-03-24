@@ -136,6 +136,15 @@ bool MEMORY_EEPROM::get_network_info(DeviceInfo *device)
        device->deviceName[7] = '\0'; // End char
     }
     
+    
+    // Device Id Default
+    if (device->id == 0xFFFF)
+    {
+       defaultOutput(true);
+       Serial.println(F("Using Default Id - 0"));
+       device->id = 0;
+    }
+    
     defaultOutput(false);
     return true;
 }
