@@ -41,16 +41,16 @@ void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress s
     Ethernet.begin(mac,ip,gateway,subnet);
     Serial.println(F("------------ Setting up Ethernet -------------"));
     
-    Serial.print("IPAddress:");
+    Serial.print(F("IPAddress:"));
     Serial.println(Ethernet.localIP());
     
-    Serial.print("Gateway:");
+    Serial.print(F("Gateway:  "));
     Serial.println(Ethernet.gatewayIP());
     
-    Serial.print("Subnet:");
+    Serial.print(F("Subnet:   "));
     Serial.println(Ethernet.subnetMask());
 
-    Serial.print("DNS Server:");
+    Serial.print(F("DNS:      "));
     Serial.println(Ethernet.dnsServerIP());
 
     Serial.println(F("              ------------------"));
@@ -69,7 +69,7 @@ void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress s
     Serial.print(":");
     Serial.println(macAdd[5],16);
 
-    Serial.print("Server:");
+    Serial.print(F("Server:   "));
     Serial.println(server);
 
     Serial.println(F("----------------------------------------------"));

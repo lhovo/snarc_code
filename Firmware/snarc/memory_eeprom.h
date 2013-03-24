@@ -65,7 +65,7 @@ class MEMORY_EEPROM
         bool expire_access(long rfid);
         
         void print_access_list(void);
-        bool erase_access_list(void);
+        bool erase(void);
         
     private:
         void defaultOutput(boolean isStart);

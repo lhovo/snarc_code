@@ -6,7 +6,7 @@
 #include <Time.h>
 
 void setup()
-{
+{    
     DeviceInfo mySettings;
     
     MENU.init(19200); // Set the TX/RX pins to 19200
@@ -15,7 +15,7 @@ void setup()
     RFID.reading_callback(rfid_alert_user);
     MEMORY.init();
     MEMORY.get_network_info(&mySettings);
-    Serial.print("Starting with name: ");
+    Serial.print(F("Starting with name: "));
     Serial.println(mySettings.deviceName);
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     

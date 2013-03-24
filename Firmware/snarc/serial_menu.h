@@ -21,10 +21,11 @@
 
 #include "config.h"
 #include "Arduino.h"
-#include <avr/wdt.h>
+#include <IPAddress.h>
 
 class SERIAL_MENU
 {
+    boolean changesMade;
     public:
         void init(int baud);
         void check(void);
@@ -33,7 +34,8 @@ class SERIAL_MENU
         void prompt(void);
         void write_codes_to_memory(void);
         void clear_serial_buffer(void);
-        void listen_for_device_name(void);
+        void listen_for_device_name(char *deviceName);
+        void listen_for_ipaddress(IPAddress *change);
 };
 
 extern SERIAL_MENU SNARC_SERIAL_MENU;

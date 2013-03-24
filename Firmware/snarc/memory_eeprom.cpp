@@ -168,9 +168,11 @@ void MEMORY_EEPROM::print_access_list(void)
     
 }
 
-bool MEMORY_EEPROM::erase_access_list(void)
+bool MEMORY_EEPROM::erase(void)
 {
- 
+    for (int i = 0; i < 512; i++)
+      EEPROM.write(i, 0xff);
+    
     return true;   
 }
 

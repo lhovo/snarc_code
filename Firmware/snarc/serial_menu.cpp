@@ -26,8 +26,6 @@
  * Definitions
  ******************************************************************************/
 
-//#define DEBUG
-
 /******************************************************************************
  * Constructors
  ******************************************************************************/
@@ -39,6 +37,8 @@
 void SERIAL_MENU::init(int baud)
 {
   Serial.begin(baud);
+  changesMade = false;
+  Serial.println("To enter program mode type '+++'");
 }
 
 void SERIAL_MENU::check(void)
@@ -64,6 +64,10 @@ void SERIAL_MENU::check(void)
 void SERIAL_MENU::display(void)
 {
     char incomingByte = 0;
+    DeviceInfo mySettings;
+    IPAddress tempIP;
+    MEMORY.get_network_info(&mySettings);
+    
     clear_serial_buffer();
     Serial.println(F("Entered Programming Mode! "));
     prompt();
@@ -79,13 +83,46 @@ void SERIAL_MENU::display(void)
             
             switch((char)incomingByte)
             {
-                // Test Server Connection
-                case 's':
-                    Serial.println(F("testing send_to_server() function"));
+              
+                // Read current list from EEPROM cache
+                case 'r':
+                    MEMORY.print_access_list();
+                    prompt();
+                    break;
+                                   
+                // Write new code to MEMORY
+                // the next key scanned will be saved
+                case 'k':
+                    Serial.println("Not implemented yet!!");
+                    break;
+                
+                // Wipe all MEMORY
+                case 'w':
+                    MEMORY.erase();
+                    Serial.println(F("Memory Erase complete.."));
+                    break;
+                
+                // Expire a card, typed or scanned
+                case 'z':
+                    Serial.println("Not implemented yet!!");
+                    break;
+                
+                // Ask server for card update
+                case 'u':
+                    Serial.println(F("Updating card list"));
                     //Serial.println(send_to_server("1234567890", 0));
                     prompt();
                     break;
-                    
+                
+                // --------------  Server update functions -------------- //
+                // ---  These need to be saved after updating them ------ //
+                
+                // Set Device Name
+                case 'd':
+                    listen_for_device_name(mySettings.deviceName);
+                    prompt();
+                    break;
+                
                 // Set Mac Address
                 case 'm':
                     Serial.println(F("disabled in implementation sorry ( buggy ) , use hardcode MACs only."));
@@ -96,37 +133,50 @@ void SERIAL_MENU::display(void)
                     break;
                 
                 // Set Ip Address
-                case 'a':
-                    Serial.println(F("not yet implemeted, sorry."));
-                    // TODO: Implement IP address change
+                case 'i':
+                    tempIP = mySettings.ip;
+                    listen_for_ipaddress(&tempIP);
+                    mySettings.ip = tempIP;
+                    prompt();
+                    break;
+                
+                // Set Gateway Address
+                case 'g':
+                    tempIP = mySettings.gateway;
+                    listen_for_ipaddress(&tempIP);
+                    mySettings.gateway = tempIP;
+                    prompt();
+                    break;
+
+                // Set Subnet Address
+                case 'n':
+                    tempIP = mySettings.subnet;
+                    listen_for_ipaddress(&tempIP);
+                    mySettings.subnet = tempIP;
                     prompt();
                     break;
                     
-                // Set Device Name
-                case 'd':
-                    listen_for_device_name();
+                // Set Server Address
+                case 'a':
+                    tempIP = mySettings.server;
+                    listen_for_ipaddress(&tempIP);
+                    mySettings.server = tempIP;
                     prompt();
                     break;
-                
-                // Erase Data
-                case 'i':
-                    Serial.println(F("please wait, erase in progress...."));
-                    MEMORY.erase_access_list(); //wipe all codes
-                    prompt();
-                    break;
-                
-                // r mean read current list from EEPROM cache
-                case 'r':
-                    MEMORY.print_access_list();
-                    prompt();
-                    break;
-                
-                // z means delete a single key from EEPROM without deleting all of them.
-                case 'z':
-//                        MEMORY.delete_code();
-//                        Serial.print(F("address:"));
-//                        Serial.println(last_address);
-                    prompt();
+                    
+                // Save Changed data
+                case 's':
+                    if(changesMade)
+                    {
+                       MEMORY.store_network_info(&mySettings); 
+                       changesMade = false;
+                       Serial.println(F("Changes Saved.."));
+                       Serial.println(F("Reset device for settings to take effect"));
+                    }
+                    else
+                    {
+                       Serial.println(F("No changes made.."));
+                    }
                     break;
 
                 // x mean exit programming mode, and resume normal behaviour
@@ -140,43 +190,10 @@ void SERIAL_MENU::display(void)
                 case ' ':
                     break;
                     
-                // n means write new code to EEPROM
-                // ( the next key scanned
-                case 'n':
-//                        listen_for_codes();
-                    // result is in last_door and last_code
-                    DOOR.unlockDoor(2000); // clunk the door as user feedback 2 seconds
-                    // see if the key already has access
-//                        int access = matchRfid(last_code) & 0xF;
-//                        Serial.print(F("EEPROM access level:"));
-//                        Serial.println(access);
-                    
-                    // IF THIS DOOR/READER is not already in the permitted access list from the EEPROM/SERVER allow it!
-                    // this converts the bit number, to its binary equivalent, and checks if that bit is set in "access"
-                    // by using a binary "and" command.
-//                        Serial.print(F("THISSNARC:"));
-//                        Serial.print(THISSNARC);
-//                        Serial.print(F(" bits:"));
-//                        Serial.print((  1 << ( THISSNARC - 1 ) ));
-//                        Serial.print(F(" more bits:"));
-//                        Serial.println(access & (  1 << ( THISSNARC - 1 ) ));
-//                        
-//                        if ( (access & (  1 << ( THISSNARC - 1 ) )) ==  0 )
-//                        {   // ie no access yet for this door, yes all these brackets are needed
-//                            // append this ocde to the EEPROM, with current doors permissions+ new one
-//                            write_next_code_to_eeprom(last_code, access | (  1 << ( THISSNARC - 1 ) ));
-//                        }
-//                        else
-//                        {
-//                            Serial.println(F("Card already has access, no change made"));  
-//                        }
-//                        prompt();
+                // nothing
+                default:
+                    prompt();
                     break;
-                    
-                    // nothing
-                    default:
-                        prompt();
-                        break;
             } //switch/case
             clear_serial_buffer();
         } // if
@@ -194,47 +211,96 @@ void SERIAL_MENU::prompt(void)
     Serial.println();
     Serial.println(F("PROGRAM MODE:"));
     Serial.println(F("r - read eeprom list"));
-    Serial.println(F("n - program new key to EEPROM"));
-    Serial.println(F("t - test server interface ( sends fake tag 1234567890 to server ) "));
-    Serial.println(F("i - wipe and initialise EEPROM (dangerous!) "));
+    Serial.println(F("k - program new key to EEPROM"));
+    Serial.println(F("u - Ask server to give us a card update"));
+    Serial.println(F("w - wipe and initialise EEPROM (dangerous!) "));
     Serial.println(F("z - delete a single card from EEPROM"));
-    
+    Serial.println(F("-- Options below need to be saved after change --"));
     Serial.println(F("d - set device name"));
-    Serial.println(F("m - set/reset MAC address"));
-    Serial.println(F("a - set device IP address"));
-    Serial.println(F("s - save server changes"));
+    Serial.println(F("m - set MAC address"));
+    Serial.println(F("i - set IP address"));
+    Serial.println(F("g - set Gateway address"));
+    Serial.println(F("n - set Subnet address"));
+    //Serial.println(F("e - set DNS address")); // -- Not supported yet -- //
+    Serial.println(F("a - set Server address"));
+    Serial.println(F("s - save changes"));
     Serial.println();
     Serial.println(F("x - exit programming mode"));
 }
 
-void SERIAL_MENU::clear_serial_buffer(void)
+void SERIAL_MENU::listen_for_ipaddress(IPAddress *change)
 {
-    while (Serial.available())
+    Serial.print(F("Current IP is: "));
+    Serial.println(*change);
+    Serial.println(F("Enter new IP eg 192.168.1.1"));
+    
+    boolean keepReading = true;
+    int     serial_recieve_index = 0;
+    char    charIP[15]; // there is a max of 15 chars - 255.255.255.255
+    
+    clear_serial_buffer();
+    
+    while (keepReading)
     {
-        Serial.read();
+        while (Serial.available())
+        {
+            if (Serial.peek() == 13 || Serial.peek() == 10)
+            {
+                // new line. End entry
+                keepReading = false;
+                break;
+            }
+            charIP[serial_recieve_index++] = Serial.read();
+            if (serial_recieve_index >= 15) // there is a max of 15 chars - 255.255.255.255
+            {
+                // max length. End entry
+                keepReading = false;
+                break;
+            }
+        }
+    }
+    clear_serial_buffer();
+    
+    if (serial_recieve_index == 0)
+    {
+        // Empty, do not save.
+        Serial.println(F("No input detected. No changes made."));
+    }
+    else
+    {
+       // Proccess the ip address and make it a number 
+       int part[4];
+       String ipAddressString = charIP;
+       // Find the three dots
+       part[0] = ipAddressString.indexOf('.');
+       part[1] = ipAddressString.indexOf('.', part[0]+1);
+       part[2] = ipAddressString.indexOf('.', part[1]+1);
+       
+       if(part[2] != ipAddressString.lastIndexOf('.'))
+       {
+          Serial.println(F("ERROR.. There are too many '.' in the input string"));
+          return; 
+       }
+       
+       //atoi(valueArray)
+       //myString.toInt();
+       sscanf(charIP, "%d.%d.%d.%d", part, part+1, part+2, part+3);
+       *change = IPAddress(part[0], part[1], part[2], part[3]);
+       Serial.print(F("IP set to: "));
+       Serial.println(*change);
+       changesMade = true;
     }
 }
 
-void SERIAL_MENU::listen_for_device_name(void)
+void SERIAL_MENU::listen_for_device_name(char *deviceName)
 {
-    bool keepReading = true;
-    char serial_recieve_data[MEMORY_DEVICE_NAME_MAX_LENGTH];
-    int  serial_recieve_index = 0;
-    int  i;
+    boolean keepReading = true;
+    int     serial_recieve_index = 0, i;
             
     Serial.print(F("Current device name is: "));
-//    if(MEMORY.get_device_name(serial_recieve_data))
-//    {
-//        Serial.print(serial_recieve_data);
-//        Serial.println();
-//    }
-//    else
-//    {
-//        Serial.println(F("Failed to get device name"));
-//    }
-   
+    Serial.println(deviceName);
     Serial.print(F("Enter new device name (max "));
-    Serial.print(MEMORY_DEVICE_NAME_MAX_LENGTH);
+    Serial.print(MEMORY_DEVICE_NAME_MAX_LENGTH-1); // We need a termination char
     Serial.println(F(" characters):"));
     
     clear_serial_buffer();
@@ -249,8 +315,8 @@ void SERIAL_MENU::listen_for_device_name(void)
                 keepReading = false;
                 break;
             }
-            serial_recieve_data[serial_recieve_index++] = Serial.read();
-            if (serial_recieve_index >= MEMORY_DEVICE_NAME_MAX_LENGTH)
+            deviceName[serial_recieve_index++] = Serial.read();
+            if (serial_recieve_index >= MEMORY_DEVICE_NAME_MAX_LENGTH-1)
             {
                 // max length. End entry
                 keepReading = false;
@@ -270,14 +336,21 @@ void SERIAL_MENU::listen_for_device_name(void)
         // Fill rest of device name array with null chars
         for (i = serial_recieve_index; i <= MEMORY_DEVICE_NAME_MAX_LENGTH; i++)
         {
-            serial_recieve_data[i] = '\0';
+            deviceName[i] = '\0';
         }
         
-//        MEMORY.set_device_name(serial_recieve_data);
+        changesMade = true;
         // Echo & save new name
         Serial.print(F("Device name set to: "));
-        Serial.print(serial_recieve_data);
-        Serial.println();
+        Serial.println(deviceName);
+    }
+}
+
+void SERIAL_MENU::clear_serial_buffer(void)
+{
+    while (Serial.available())
+    {
+        Serial.read();
     }
 }
 
