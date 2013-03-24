@@ -19,15 +19,17 @@
 #ifndef __SERIAL_MENU_H__
 #define __SERIAL_MENU_H__
 
-#include "Arduino.h"
 #include "config.h"
+#include "Arduino.h"
+#include <avr/wdt.h>
 
 class SERIAL_MENU
 {
     public:
-        void display(void);
-        
+        void init(int baud);
+        void check(void);
     private:
+        void display(void);
         void prompt(void);
         void write_codes_to_memory(void);
         void clear_serial_buffer(void);

@@ -36,112 +36,124 @@
  * User API
  ******************************************************************************/
 
+void SERIAL_MENU::init(int baud)
+{
+  Serial.begin(baud);
+}
+
+void SERIAL_MENU::check(void)
+{
+    if (Serial.available() > 3)
+    {
+        char program[3];
+        program[0] = Serial.read();
+        program[1] = Serial.read();
+        program[2] = Serial.read();
+        
+        if(program[0] == '+' && program[1] == '+' && program[2] == '+')
+        {
+          display();
+        }
+        else
+        {
+          clear_serial_buffer();
+        }
+    }
+}
+
 void SERIAL_MENU::display(void)
 {
+    char incomingByte = 0;
     clear_serial_buffer();
-    Serial.println(F("Press a few keys, then ENTER *NOW* to start programming mode ( 3...2...1... ) "));
-
-    delay(3000);
-
-    // three ENTER keys is >2, AND WE ARE IN PROGRAMMING MODE !  
-    int incomingByte = 0;
-
-#ifdef DEBUG
-    if (true) // DEBUG: Always enter programming mode
-#else
-    if (Serial.available() > 2)
-#endif
+    Serial.println(F("Entered Programming Mode! "));
+    prompt();
+    
+    while( incomingByte != -1 )
     {
-        clear_serial_buffer();
-        Serial.println(F("Entered Programming Mode! "));
-        prompt();
+        LEDS.on(LEDS_RED); // RED FLASH FOR PROGRAMMING MODE
         
-        while( incomingByte != -1 )
+        if ( Serial.available() )
         {
-            LEDS.blink(LEDS_RED); // RED FLASH FOR PROGRAMMING MODE
+            incomingByte = Serial.read();
+            Serial.println((char)incomingByte);
             
-            if ( Serial.available() )
+            switch((char)incomingByte)
             {
-                incomingByte = Serial.read();
-                Serial.println((char)incomingByte);
+                // Test Server Connection
+                case 's':
+                    Serial.println(F("testing send_to_server() function"));
+                    //Serial.println(send_to_server("1234567890", 0));
+                    prompt();
+                    break;
+                    
+                // Set Mac Address
+                case 'm':
+                    Serial.println(F("disabled in implementation sorry ( buggy ) , use hardcode MACs only."));
+                    // TODO: Implement IP address change
+                    // set MAC address
+                    //listen_for_new_mac_address();
+                    prompt();
+                    break;
                 
-                switch((char)incomingByte)
-                {
-                    // Test Server Connection
-                    case 's':
-                        Serial.println(F("testing send_to_server() function"));
-                        //Serial.println(send_to_server("1234567890", 0));
-                        prompt();
-                        break;
-                        
-                    // Set Mac Address
-                    case 'm':
-                        Serial.println(F("disabled in implementation sorry ( buggy ) , use hardcode MACs only."));
-                        // TODO: Implement IP address change
-                        // set MAC address
-                        //listen_for_new_mac_address();
-                        prompt();
-                        break;
+                // Set Ip Address
+                case 'a':
+                    Serial.println(F("not yet implemeted, sorry."));
+                    // TODO: Implement IP address change
+                    prompt();
+                    break;
                     
-                    // Set Ip Address
-                    case 'a':
-                        Serial.println(F("not yet implemeted, sorry."));
-                        // TODO: Implement IP address change
-                        prompt();
-                        break;
-                        
-                    // Set Device Name
-                    case 'd':
-                        listen_for_device_name();
-                        prompt();
-                        break;
-                    
-                    // Erase Data
-                    case 'i':
-                        Serial.println(F("please wait, erase in progress...."));
-                        MEMORY.erase_access_list(); //wipe all codes
-                        prompt();
-                        break;
-                    
-                    // r mean read current list from EEPROM cache
-                    case 'r':
-                        MEMORY.print_access_list();
-                        prompt();
-                        break;
-                    
-                    // z means delete a single key from EEPROM without deleting all of them.
-                    case 'z':
+                // Set Device Name
+                case 'd':
+                    listen_for_device_name();
+                    prompt();
+                    break;
+                
+                // Erase Data
+                case 'i':
+                    Serial.println(F("please wait, erase in progress...."));
+                    MEMORY.erase_access_list(); //wipe all codes
+                    prompt();
+                    break;
+                
+                // r mean read current list from EEPROM cache
+                case 'r':
+                    MEMORY.print_access_list();
+                    prompt();
+                    break;
+                
+                // z means delete a single key from EEPROM without deleting all of them.
+                case 'z':
 //                        MEMORY.delete_code();
 //                        Serial.print(F("address:"));
 //                        Serial.println(last_address);
-                        prompt();
-                        break;
+                    prompt();
+                    break;
 
-                    // x mean exit programming mode, and resume normal behaviour
-                    case 'x':
-                        incomingByte = -1; // exit this mode
-                        break;
+                // x mean exit programming mode, and resume normal behaviour
+                case 'x':
+                    incomingByte = -1; // exit this mode
+                    break;
+                
+                // ignore whitespace
+                case '\r':
+                case '\n':
+                case ' ':
+                    break;
                     
-                    // ignore whitespace
-                    case '\r':
-                    case '\n':
-                    case ' ':
-                        break;
-                        
-                    // n means write new code to EEPROM
-                    // ( the next key scanned
-                    case 'n':
+                // n means write new code to EEPROM
+                // ( the next key scanned
+                case 'n':
 //                        listen_for_codes();
-                        // result is in last_door and last_code
-                        DOOR.unlockDoor(2000); // clunk the door as user feedback 2 seconds
-                        // see if the key already has access
+                    // result is in last_door and last_code
+                    DOOR.unlockDoor(2000); // clunk the door as user feedback 2 seconds
+                    // see if the key already has access
 //                        int access = matchRfid(last_code) & 0xF;
 //                        Serial.print(F("EEPROM access level:"));
 //                        Serial.println(access);
-                        
-                        // IF THIS DOOR/READER is not already in the permitted access list from the EEPROM/SERVER allow it!
-                        // this converts the bit number, to its binary equivalent, and checks if that bit is set in "access"
-                        // by using a binary "and" command.
+                    
+                    // IF THIS DOOR/READER is not already in the permitted access list from the EEPROM/SERVER allow it!
+                    // this converts the bit number, to its binary equivalent, and checks if that bit is set in "access"
+                    // by using a binary "and" command.
 //                        Serial.print(F("THISSNARC:"));
 //                        Serial.print(THISSNARC);
 //                        Serial.print(F(" bits:"));
@@ -159,17 +171,21 @@ void SERIAL_MENU::display(void)
 //                            Serial.println(F("Card already has access, no change made"));  
 //                        }
 //                        prompt();
+                    break;
+                    
+                    // nothing
+                    default:
+                        prompt();
                         break;
-                        
-                        // nothing
-                        default:
-                            prompt();
-                            break;
-                } //switch/case
-                clear_serial_buffer();
-            } // if
-        } //while
-    }
+            } //switch/case
+            clear_serial_buffer();
+        } // if
+        delay(200);
+        LEDS.off(LEDS_RED); // RED FLASH FOR PROGRAMMING MODE
+        delay(200);
+    } //while
+    
+    Serial.println("Exited Program Mode");
 }
 
 

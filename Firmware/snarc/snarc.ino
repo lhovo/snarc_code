@@ -1,27 +1,23 @@
-#include <SoftwareSerial.h>
+#include "config.h"
 #include <Ethernet.h>
+#include <SoftwareSerial.h>
 #include <SPI.h>
 #include <EEPROM.h>
-#include "config.h"
 #include <Time.h>
 
 void setup()
-{ 
+{
     DeviceInfo mySettings;
-  
+    
+    MENU.init(19200); // Set the TX/RX pins to 19200
     LEDS.init();
     RFID.init();
     RFID.reading_callback(rfid_alert_user);
     MEMORY.init();
-    if(MEMORY.get_network_info(&mySettings))
-    {
-        ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
-    }
-    else
-    {
-       Serial.println( "Failed to get settings from MEMORY, ETHERNET not initialised" );
-    }
-    Serial.begin(19200);
+    MEMORY.get_network_info(&mySettings);
+    Serial.print("Starting with name: ");
+    Serial.println(mySettings.deviceName);
+    ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     
 //    MENU.display();
     attachInterrupt(INT_USER, userInterupt, CHANGE);
@@ -35,8 +31,11 @@ void loop()
     {
         Serial.println(rfidTag);
         LEDS.blink(LEDS_GREEN);
+        
+        DOOR.unlockDoor(2000); // open door for 2 seconds
     }
     LEDS.off(LEDS_RED);
+    MENU.check();
 }
 
 void rfid_alert_user()
