@@ -40,9 +40,6 @@
 //#define USE_ETHERNET_SOCKET
 //#define USE_ETHERNET_HTTP_SERVER
 
-#define MEMORY_DEVICE_NAME_MAX_LENGTH 12   // Maximum length of the device name
-#define MEMORY_RFID_LENGTH            10+1 // +1 for the string end
-
 /* -------------------------------------
  *      END OF USER CONFIG OPTIONS
  * -------------------------------------
@@ -53,8 +50,12 @@
 #define LEDS_RED    1
 #define LEDS_YELLOW 2
 #define LEDS_GREEN  4
+#define LEDS_ALL    (LEDS_RED | LEDS_YELLOW | LEDS_GREEN)
 
 #include <Ethernet.h>
+#include <Time.h>
+
+#define MEMORY_DEVICE_NAME_MAX_LENGTH 12
 
 // Declare Client info to be stored
 struct DeviceInfo {
@@ -65,6 +66,11 @@ struct DeviceInfo {
   byte          mac[6];    // Mac address of this device
   char          deviceName[MEMORY_DEVICE_NAME_MAX_LENGTH]; // Name/Location of this device
   unsigned int  id;        // Device unique id
+};
+
+struct RFID_info {
+    unsigned long  card;
+    time_t         expiration;
 };
 
 // --- Include the interactive serial menu ---

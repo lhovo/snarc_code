@@ -29,11 +29,8 @@
 #define MEMORY_DEVICE_NAME_MAX_LENGTH 12 // Maximum length of the device name
 #endif
 
-#ifndef MEMORY_RFID_LENGTH
-#define MEMORY_RFID_LENGTH  sizeof(long) + sizeof(time_t) // RFID Tag plus expiry time
-#endif
-
-#define MEMORY_HEADER_LEN 50
+#define MEMORY_RFID_LENGTH  sizeof(RFID_info)
+#define MEMORY_HEADER_LEN   50 // Space allocated for the config header
 
 class MEMORY_EEPROM
 {
@@ -41,14 +38,14 @@ class MEMORY_EEPROM
   
     public:
         void init(void);
-        bool store_network_info(DeviceInfo *device);
-        bool get_network_info(DeviceInfo *device);
+        bool storeNetworkInfo(DeviceInfo *device);
+        bool getNetworkInfo(DeviceInfo *device);
         
-        bool store_access(long rfid, time_t expiration); 
-        bool grant_access(long rfid);
-        bool expire_access(long rfid);
+        bool storeAccess(RFID_info access); 
+        bool accessAllowed(unsigned long rfid);
+        bool expireAccess(unsigned long rfid);
         
-        void print_access_list(void);
+        void printAccessList(void);
         bool erase(void);
         
     private:

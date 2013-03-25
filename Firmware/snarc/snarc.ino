@@ -14,14 +14,13 @@ void setup()
     RFID.init();
     RFID.reading_callback(rfid_alert_user);
     MEMORY.init();
-    MEMORY.get_network_info(&mySettings);
+    MEMORY.getNetworkInfo(&mySettings);
     Serial.print(F("Device name: "));
     Serial.print(mySettings.deviceName);
     Serial.print(" id:");
     Serial.println(mySettings.id);
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     
-//    MENU.display();
     attachInterrupt(INT_USER, userInterupt, CHANGE);
 }
 
@@ -29,20 +28,29 @@ void loop()
 {
     unsigned long rfidTag;
     
+    LEDS.toggle(LEDS_YELLOW, 2000);
+    MENU.check();
+    
     if(RFID.read(&rfidTag))
     {
-        Serial.println(rfidTag);
-        LEDS.blink(LEDS_GREEN);
-        
-        DOOR.unlockDoor(2000); // open door for 2 seconds
+        if(MEMORY.accessAllowed(rfidTag))
+        {
+            Serial.println(rfidTag);
+            LEDS.off(LEDS_YELLOW);
+            LEDS.on(LEDS_GREEN);
+            DOOR.unlockDoor(2000); // open door for 2 seconds
+            LEDS.off(LEDS_GREEN);
+        }
+        else
+        {
+            LEDS.blink(LEDS_RED);
+        }
     }
-    LEDS.off(LEDS_RED);
-    MENU.check();
 }
 
 void rfid_alert_user()
 {
-  LEDS.on(LEDS_RED);
+  LEDS.on(LEDS_YELLOW);
 }
 
 void led_test()

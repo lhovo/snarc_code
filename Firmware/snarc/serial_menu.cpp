@@ -74,11 +74,14 @@ void SERIAL_MENU::check(void)
 void SERIAL_MENU::display(void)
 {
     char incomingByte = 0;
-    DeviceInfo mySettings;
-    IPAddress tempIP;
-    MEMORY.get_network_info(&mySettings);
+    DeviceInfo   mySettings;
+    RFID_info    newCard;
+    IPAddress    tempIP;
+    
+    MEMORY.getNetworkInfo(&mySettings);
     changesMade = false;
     
+    LEDS.off(LEDS_ALL);
     clear_serial_buffer();
     Serial.println(F("Entered Programming Mode! "));
     prompt();
@@ -96,14 +99,36 @@ void SERIAL_MENU::display(void)
             {
               
                 // Read current list from EEPROM cache
-                case 'r':
-                    MEMORY.print_access_list();
+                case 'c':
+                    Serial.println(F("Card list.."));
+                    MEMORY.printAccessList();
                     break;
                                    
                 // Write new code to MEMORY
                 // the next key scanned will be saved
                 case 'k':
-                    Serial.println("Not implemented yet!!");
+                    Serial.println(F("Scan new card now.."));
+                    
+                    // Wait for card to be read
+                    while(!RFID.read(&newCard.card)){}
+                    
+                    // Make the card expire a week from now
+                    newCard.expiration = now()+SECS_PER_WEEK;
+                    
+                    Serial.print(newCard.card);
+                    Serial.print(" : ");
+                    Serial.println(newCard.expiration);
+                    
+                    if(MEMORY.storeAccess(newCard))
+                    {
+                        Serial.print(F("-- "));
+                        Serial.print(newCard.card);
+                        Serial.println(F(" STORED --"));
+                    }
+                    else
+                    {
+                        Serial.println(F("ERROR ADDING CARD!"));  
+                    }
                     break;
                 
                 // Wipe all MEMORY
@@ -176,7 +201,7 @@ void SERIAL_MENU::display(void)
                 case 's':
                     if(changesMade)
                     {
-                       MEMORY.store_network_info(&mySettings); 
+                       MEMORY.storeNetworkInfo(&mySettings); 
                        changesMade = false;
                        Serial.println(F("Changes Saved.."));
                        Serial.println(F("Reset device for settings to take effect"));
@@ -207,12 +232,14 @@ void SERIAL_MENU::display(void)
                     break;
                     
                 // nothing
+                case 'h':
                 default:
+                    prompt();
                     break;
             } //switch/case
             if(incomingByte != -1)
             {
-                prompt();
+                Serial.println(F("Command Done.."));
             }
             clear_serial_buffer();
         } // if
@@ -230,11 +257,12 @@ void SERIAL_MENU::prompt(void)
 {
     Serial.println();
     Serial.println(F("PROGRAM MODE:"));
-    Serial.println(F("r - read eeprom list"));
+    Serial.println(F("c - print card list"));
     Serial.println(F("k - program new key to EEPROM"));
     Serial.println(F("u - Ask server to give us a card update"));
     Serial.println(F("w - wipe and initialise EEPROM (dangerous!) "));
     Serial.println(F("z - delete a single card from EEPROM"));
+    Serial.println();
     Serial.println(F("-- Options below need to be saved after change --"));
     Serial.println(F("d - set device name"));
     Serial.println(F("t - set device identification"));
@@ -411,7 +439,7 @@ void SERIAL_MENU::listen_for_device_name(char *deviceName)
 void SERIAL_MENU::listen_for_device_id(unsigned int *deviceId)
 {
     boolean keepReading = true;
-    int     serial_recieve_index = 0, i;
+    int     serial_recieve_index = 0;
     char    deviceChar[6];
             
     Serial.print(F("Current device id is: "));
