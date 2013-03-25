@@ -184,7 +184,6 @@ bool MEMORY_EEPROM::storeAccess(RFID_info access)
             ((byte*) &entry)[j] = EEPROM.read(i+j); 
         }
         
-        Serial.println(entry.card);
         if(entry.card != 0xFFFFFFFF)
         {
             if(entry.card == access.card)
@@ -232,7 +231,7 @@ bool MEMORY_EEPROM::accessAllowed(unsigned long rfid)
             if(entry.card == rfid)
             {
                 // If we havent got the time just let them in..
-                if(timeStatus() != timeSet || now() < entry.expiration)
+                if(entry.expiration != 0 && (timeStatus() != timeSet || now() < entry.expiration))
                 {
                     return true;
                 }
@@ -251,9 +250,39 @@ bool MEMORY_EEPROM::accessAllowed(unsigned long rfid)
     return false;
 }
 
-bool expireAccess(unsigned long rfid)
+// Set the timestamp to zero
+bool MEMORY_EEPROM::expireAccess(unsigned long rfid)
 {
-    return false;   
+    unsigned int i,j;
+    RFID_info entry;
+    
+    for(i=MEMORY_HEADER_LEN;;i+=MEMORY_RFID_LENGTH)
+    {
+        for(j=0;j<MEMORY_RFID_LENGTH;j++)
+        {
+            ((byte*) &entry)[j] = EEPROM.read(i+j); 
+        }
+        
+        Serial.println(entry.card);
+        if(entry.card != 0xFFFFFFFF)
+        {
+            if(entry.card == rfid)
+            {
+                // Only update if the info has changed
+                if(entry.expiration != 0)
+                {
+                    entry.expiration = 0;
+                    // Write new data to the same location
+                    for(j=sizeof(entry.card);j<MEMORY_RFID_LENGTH;j++)
+                    {
+                        EEPROM.write(i+j, ((byte*) &entry)[j]);
+                    }
+                }
+                return true;
+            }
+        }
+    }
+    return false; 
 }
 
 // Print access list and timestamps

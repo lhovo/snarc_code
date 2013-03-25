@@ -107,17 +107,13 @@ void SERIAL_MENU::display(void)
                 // Write new code to MEMORY
                 // the next key scanned will be saved
                 case 'k':
-                    Serial.println(F("Scan new card now.."));
+                    Serial.println(F("Scan new card now"));
                     
                     // Wait for card to be read
                     while(!RFID.read(&newCard.card)){}
                     
                     // Make the card expire a week from now
                     newCard.expiration = now()+SECS_PER_WEEK;
-                    
-                    Serial.print(newCard.card);
-                    Serial.print(" : ");
-                    Serial.println(newCard.expiration);
                     
                     if(MEMORY.storeAccess(newCard))
                     {
@@ -139,7 +135,22 @@ void SERIAL_MENU::display(void)
                 
                 // Expire a card, typed or scanned
                 case 'z':
-                    Serial.println("Not implemented yet!!");
+                    Serial.println(F("Scan card now, or type ID"));
+                    
+                    // Wait for card to be read
+                    while(!RFID.read(&newCard.card)){}
+                    
+                    if(MEMORY.expireAccess(newCard.card))
+                    {
+                        Serial.print(F("-- "));
+                        Serial.print(newCard.card);
+                        Serial.println(F(" EXPIRED --"));   
+                    }
+                    else
+                    {
+                        Serial.print(F("Couldn't find card -- "));
+                        Serial.println(newCard.card);   
+                    }
                     break;
                 
                 // Ask server for card update
@@ -259,9 +270,9 @@ void SERIAL_MENU::prompt(void)
     Serial.println(F("PROGRAM MODE:"));
     Serial.println(F("c - print card list"));
     Serial.println(F("k - program new key to EEPROM"));
+    Serial.println(F("z - expire a single card from EEPROM"));
     Serial.println(F("u - Ask server to give us a card update"));
     Serial.println(F("w - wipe and initialise EEPROM (dangerous!) "));
-    Serial.println(F("z - delete a single card from EEPROM"));
     Serial.println();
     Serial.println(F("-- Options below need to be saved after change --"));
     Serial.println(F("d - set device name"));
