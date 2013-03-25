@@ -50,6 +50,7 @@ class ETHERNET_HTTP
     
     public:
         void init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server);
+        void print_settings(void);
         boolean check_connection();
         int check_tag(long tag, int door);
     private:

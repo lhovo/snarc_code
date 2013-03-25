@@ -36,10 +36,16 @@
 
 void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server)
 {
-    byte macAdd[6];
     delay(1000);   // delay boot by another precautionary 1sec to allow power rail time to stabilise, etc ( ethernet module draws mucho powero ) 
-    Ethernet.begin(mac,ip,gateway,subnet);
-    Serial.println(F("------------ Setting up Ethernet -------------"));
+    Ethernet.begin(mac,ip,gateway,subnet);    
+    serverIP = server;
+}
+
+void ETHERNET_HTTP::print_settings(void)
+{
+    byte macAdd[6];
+    
+    Serial.println(F("--------- Ethernet Setting from chip ---------"));
     
     Serial.print(F("IPAddress:"));
     Serial.println(Ethernet.localIP());
@@ -53,10 +59,8 @@ void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress s
     Serial.print(F("DNS:      "));
     Serial.println(Ethernet.dnsServerIP());
 
-    Serial.println(F("              ------------------"));
-
     Ethernet.macAddress(macAdd);
-    Serial.print("Mac:");
+    Serial.print(F("Mac:      "));
     Serial.print(macAdd[0],16);
     Serial.print(":");
     Serial.print(macAdd[1],16);
@@ -70,11 +74,9 @@ void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress s
     Serial.println(macAdd[5],16);
 
     Serial.print(F("Server:   "));
-    Serial.println(server);
+    Serial.println(serverIP);
 
-    Serial.println(F("----------------------------------------------"));
-    
-    serverIP = server;
+    Serial.println(F("----------------------------------------------"));   
 }
 
 boolean ETHERNET_HTTP::check_connection()
