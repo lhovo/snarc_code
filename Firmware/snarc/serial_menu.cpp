@@ -25,6 +25,7 @@
 /******************************************************************************
  * Definitions
  ******************************************************************************/
+#define SERIAL_TIMEOUT_COUNT 10
 
 /******************************************************************************
  * Constructors
@@ -38,24 +39,34 @@ void SERIAL_MENU::init(int baud)
 {
   Serial.begin(baud);
   Serial.println("To enter program mode type '+++'\n");
+  state = START;
 }
 
+// Check for +++, then enter program mode..
 void SERIAL_MENU::check(void)
 {
-    if (Serial.available() > 3)
+    if (Serial.available())
     {
-        char program[3];
-        program[0] = Serial.read();
-        program[1] = Serial.read();
-        program[2] = Serial.read();
-        
-        if(program[0] == '+' && program[1] == '+' && program[2] == '+')
+        switch(state)
         {
-          display();
-        }
-        else
-        {
-          clear_serial_buffer();
+            case START:
+            case PLUS1:
+                if (Serial.read() == '+')
+                {
+                    state++;
+                }
+                else
+                {
+                    state = START;
+                }
+                break;
+            case PLUS2:
+                state = START;
+                if (Serial.read() == '+')
+                {
+                    display();
+                }
+                break;
         }
     }
 }
@@ -87,7 +98,6 @@ void SERIAL_MENU::display(void)
                 // Read current list from EEPROM cache
                 case 'r':
                     MEMORY.print_access_list();
-                    prompt();
                     break;
                                    
                 // Write new code to MEMORY
@@ -111,7 +121,6 @@ void SERIAL_MENU::display(void)
                 case 'u':
                     Serial.println(F("Updating card list"));
                     //Serial.println(send_to_server("1234567890", 0));
-                    prompt();
                     break;
                 
                 // --------------  Server update functions -------------- //
@@ -120,13 +129,11 @@ void SERIAL_MENU::display(void)
                 // Set Device Name
                 case 'd':
                     listen_for_device_name(mySettings.deviceName);
-                    prompt();
                     break;
                 
                 // Set Device Id
                 case 't':
                     listen_for_device_id(&mySettings.id);
-                    prompt();
                     break;
                 
                 // Set Mac Address
@@ -135,7 +142,6 @@ void SERIAL_MENU::display(void)
                     // TODO: Implement IP address change
                     // set MAC address
                     //listen_for_new_mac_address();
-                    prompt();
                     break;
                 
                 // Set Ip Address
@@ -143,7 +149,6 @@ void SERIAL_MENU::display(void)
                     tempIP = mySettings.ip;
                     listen_for_ipaddress(&tempIP);
                     mySettings.ip = tempIP;
-                    prompt();
                     break;
                 
                 // Set Gateway Address
@@ -151,7 +156,6 @@ void SERIAL_MENU::display(void)
                     tempIP = mySettings.gateway;
                     listen_for_ipaddress(&tempIP);
                     mySettings.gateway = tempIP;
-                    prompt();
                     break;
 
                 // Set Subnet Address
@@ -159,7 +163,6 @@ void SERIAL_MENU::display(void)
                     tempIP = mySettings.subnet;
                     listen_for_ipaddress(&tempIP);
                     mySettings.subnet = tempIP;
-                    prompt();
                     break;
                     
                 // Set Server Address
@@ -167,7 +170,6 @@ void SERIAL_MENU::display(void)
                     tempIP = mySettings.server;
                     listen_for_ipaddress(&tempIP);
                     mySettings.server = tempIP;
-                    prompt();
                     break;
                     
                 // Save Changed data
@@ -185,6 +187,14 @@ void SERIAL_MENU::display(void)
                     }
                     break;
 
+                case 'p':
+                    print_node_config(&mySettings);
+                    break;
+                    
+                case 'e':
+                    ETHERNET.print_settings();
+                    break;
+
                 // x mean exit programming mode, and resume normal behaviour
                 case 'x':
                     incomingByte = -1; // exit this mode
@@ -198,9 +208,12 @@ void SERIAL_MENU::display(void)
                     
                 // nothing
                 default:
-                    prompt();
                     break;
             } //switch/case
+            if(incomingByte != -1)
+            {
+                prompt();
+            }
             clear_serial_buffer();
         } // if
         delay(200);
@@ -208,6 +221,7 @@ void SERIAL_MENU::display(void)
         delay(200);
     } //while
     
+    LEDS.off(LEDS_RED);
     Serial.println("Exited Program Mode");
 }
 
@@ -226,13 +240,54 @@ void SERIAL_MENU::prompt(void)
     Serial.println(F("t - set device identification"));
     Serial.println(F("m - set MAC address"));
     Serial.println(F("i - set IP address"));
-    Serial.println(F("g - set Gateway address"));
-    Serial.println(F("n - set Subnet address"));
+    Serial.println(F("g - set gateway address"));
+    Serial.println(F("n - set subnet address"));
     //Serial.println(F("e - set DNS address")); // -- Not supported yet -- //
-    Serial.println(F("a - set Server address"));
+    Serial.println(F("a - set server address"));
     Serial.println(F("s - save changes"));
+    Serial.println(F("p - print node config"));
+    Serial.println(F("e - print loaded ethernet settings"));
     Serial.println();
     Serial.println(F("x - exit programming mode"));
+}
+
+void SERIAL_MENU::print_node_config(DeviceInfo *settings)
+{
+    Serial.println(F("---------------- Local config ----------------"));
+    
+    Serial.print(F("Device Name: "));
+    Serial.println((String) settings->deviceName);
+
+    Serial.print(F("Device ID: "));
+    Serial.println((int)settings->id);
+    
+    Serial.print(F("IPAddress:"));
+    Serial.println((IPAddress) settings->ip);
+    
+    Serial.print(F("Gateway:  "));
+    Serial.println((IPAddress) settings->gateway);
+    
+    Serial.print(F("Subnet:   "));
+    Serial.println((IPAddress) settings->subnet);
+
+    Serial.print(F("Server:   "));
+    Serial.println((IPAddress) settings->server);
+
+    Serial.print(F("Mac:      "));
+    Serial.print(settings->mac[0],16);
+    Serial.print(":");
+    Serial.print(settings->mac[1],16);
+    Serial.print(":");
+    Serial.print(settings->mac[2],16);
+    Serial.print(":");
+    Serial.print(settings->mac[3],16);
+    Serial.print(":");
+    Serial.print(settings->mac[4],16);
+    Serial.print(":");
+    Serial.println(settings->mac[5],16);
+
+    Serial.println(F("----------------------------------------------"));
+    
 }
 
 void SERIAL_MENU::listen_for_ipaddress(IPAddress *change)
@@ -355,15 +410,64 @@ void SERIAL_MENU::listen_for_device_name(char *deviceName)
 
 void SERIAL_MENU::listen_for_device_id(unsigned int *deviceId)
 {
-   *deviceId = 9;
-   changesMade = true;
+    boolean keepReading = true;
+    int     serial_recieve_index = 0, i;
+    char    deviceChar[6];
+            
+    Serial.print(F("Current device id is: "));
+    Serial.println(*deviceId);
+    Serial.print(F("Enter new device Id"));
+    
+    clear_serial_buffer();
+    
+    while (keepReading)
+    {
+        while (Serial.available())
+        {
+            if (Serial.peek() == 13 || Serial.peek() == 10)
+            {
+                // new line. End entry
+                keepReading = false;
+                break;
+            }
+            deviceChar[serial_recieve_index++] = Serial.read();
+            if (serial_recieve_index >= 5)
+            {
+                // max length. End entry
+                keepReading = false;
+                break;
+            }
+        }
+    }
+    clear_serial_buffer();
+    
+    if (serial_recieve_index == 0)
+    {
+        // Empty, do not save.
+        Serial.println(F("No input detected. No changes made."));
+    }
+    else
+    {
+        deviceChar[serial_recieve_index] = '\0';
+        sscanf(deviceChar, "%d", deviceId);
+        changesMade = true;
+        
+        Serial.print(F("Device ID set to: "));
+        Serial.println(*deviceId);
+    }
 }
 
+// There is lots of delay here cos we want to make sure nothing is left in the buffer..
+// But still be responsive to the user.
 void SERIAL_MENU::clear_serial_buffer(void)
 {
+    int timeout = 0;
+    while(!Serial.available() && (timeout++ < SERIAL_TIMEOUT_COUNT)){delay(1);}
     while (Serial.available())
     {
         Serial.read();
+        timeout = 0;
+        while(!Serial.available() && (timeout++ < SERIAL_TIMEOUT_COUNT)){delay(1);}
     }
 }
 

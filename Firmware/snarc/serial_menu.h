@@ -25,13 +25,17 @@
 
 class SERIAL_MENU
 {
-    boolean changesMade;
+    enum Serial_State { START, PLUS1, PLUS2 }; 
+    int      state;
+    boolean  changesMade;
+    
     public:
         void init(int baud);
         void check(void);
     private:
         void display(void);
         void prompt(void);
+        void print_node_config(DeviceInfo *settings);
         void write_codes_to_memory(void);
         void clear_serial_buffer(void);
         void listen_for_device_name(char *deviceName);
