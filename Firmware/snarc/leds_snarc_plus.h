@@ -45,13 +45,14 @@
 class SNARC_PLUS_LEDS
 {
     unsigned char leds, invert; 
-    
+    unsigned long ledToggle;
     public:
         void init(void);
         
         void on(unsigned char ledv);
         void off(unsigned char ledv);
         void toggle(unsigned char ledv);
+        void toggle(unsigned char ledv, unsigned int miliseconds);
         void blink(unsigned char ledv);
         void pwm(unsigned char ledv, int value);
     private:

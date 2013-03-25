@@ -93,6 +93,15 @@ void SNARC_PLUS_LEDS::toggle(unsigned char ledv)
   show_leds(ledv, 0xff);
 }
 
+void SNARC_PLUS_LEDS::toggle(unsigned char ledv, unsigned int miliseconds)
+{
+    if (millis() > ledToggle + miliseconds)
+    {
+        ledToggle = millis();
+        toggle(ledv);
+    }
+}
+
 void SNARC_PLUS_LEDS::blink(unsigned char ledv)
 {
   toggle(ledv);
