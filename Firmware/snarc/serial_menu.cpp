@@ -1,6 +1,6 @@
 /*
  *   serial_menu.c - Give the user a serial menu to program from
- *   Copyright (C) 2013 Luke Hovigton. All right reserved.
+ *   Copyright (C) 2013 Luke Hovigton, David Bussenschutt. All right reserved.
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
