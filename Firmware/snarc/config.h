@@ -54,6 +54,19 @@
 #define LEDS_YELLOW 2
 #define LEDS_GREEN  4
 
+#include <Ethernet.h>
+
+// Declare Client info to be stored
+struct DeviceInfo {
+  IPAddress     ip;        // IP address of this device
+  IPAddress     gateway;   // Gateway to the Internet
+  IPAddress     subnet;    // Subnet Mask
+  IPAddress     server;    // IP address of the authentication server
+  byte          mac[6];    // Mac address of this device
+  char          deviceName[MEMORY_DEVICE_NAME_MAX_LENGTH]; // Name/Location of this device
+  unsigned int  id;        // Device unique id
+};
+
 // --- Include the interactive serial menu ---
 #include "serial_menu.h"
 #define MENU SNARC_SERIAL_MENU

@@ -37,6 +37,19 @@
 void MEMORY_EEPROM::init(void)
 {
     defaultCalled = false;
+
+    if(MEMORY_HEADER_LEN < sizeof(DeviceInfo))
+    {
+        Serial.println(F("Memory Header is larger than space allocated"));   
+        Serial.print(MEMORY_HEADER_LEN);
+        Serial.print(F(" space avaliable "));
+        Serial.print(sizeof(DeviceInfo));
+        Serial.println(F(" taken."));
+    }
+
+#if MEMORY_HEADER_LEN < (6*5 + MEMORY_DEVICE_NAME_MAX_LENGTH + 2)
+  #error "Memory Header is larger than space allocated"
+#endif
 }
 
 bool MEMORY_EEPROM::store_network_info(DeviceInfo *device)
