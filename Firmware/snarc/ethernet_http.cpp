@@ -37,7 +37,7 @@
 void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server)
 {
     delay(1000);   // delay boot by another precautionary 1sec to allow power rail time to stabilise, etc ( ethernet module draws mucho powero ) 
-    Ethernet.begin(mac,ip,gateway,subnet);    
+    Ethernet.begin(mac,ip,gateway,subnet, ETHERNET_CS);    
     serverIP = server;
 }
 
