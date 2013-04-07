@@ -26,13 +26,18 @@
 #define DOOR_PIN 5
 #endif
 
+enum door_status {DOOR_LOCKED, DOOR_OPEN};
+
 class DOOR_ACTUATOR
 {
     public:
-        void init(void);
-        void open(void);
-        void close(void);
-        void unlockDoor(int timeMs); // Open door for timeMs milliseconds
+        void          init(void);
+        void          open(void);
+        void          lock(void);
+        door_status   status(void);
+        // Open door for timeMs milliseconds
+        void          unlockDoor(int timeMs);
+        void          unlockDoor(int timeMs, unsigned long *card_no, unsigned int *deviceID);
         
     private:
 };

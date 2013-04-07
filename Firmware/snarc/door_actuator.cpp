@@ -37,7 +37,7 @@
 void DOOR_ACTUATOR::init(void)
 {
     pinMode(DOOR_PIN, OUTPUT);
-    close();
+    lock();
 }
 
 void DOOR_ACTUATOR::open(void)
@@ -49,7 +49,7 @@ void DOOR_ACTUATOR::open(void)
 #endif
 }
 
-void DOOR_ACTUATOR::close(void)
+void DOOR_ACTUATOR::lock(void)
 {
 #ifdef DOOR_INVERT_PIN
     digitalWrite(DOOR_PIN, HIGH);
@@ -60,9 +60,43 @@ void DOOR_ACTUATOR::close(void)
 
 void DOOR_ACTUATOR::unlockDoor(int timeMs)
 {
+   unlockDoor(timeMs, 0, 0);
+}
+
+void DOOR_ACTUATOR::unlockDoor(int timeMs, unsigned long *card_no, unsigned int *deviceID)
+{
+    // Open the door
     open();
-    delay(timeMs);
-    close();
+    
+    if( card_no > 0 )
+    {
+        ETHERNET.check_tag(card_no, deviceID);       
+    }
+
+    delay(timeMs); 
+    
+    // Lock the door again
+    lock();
+}
+
+door_status DOOR_ACTUATOR::status(void)
+{
+    if (digitalRead(DOOR_PIN) == LOW)
+    {
+#ifdef DOOR_INVERT_PIN
+      return DOOR_OPEN;
+#else
+      return DOOR_LOCKED;
+#endif
+    }
+    else
+    {
+#ifdef DOOR_INVERT_PIN
+      return DOOR_LOCKED;
+#else
+      return DOOR_OPEN;
+#endif
+    }
 }
 
 DOOR_ACTUATOR DOOR;
