@@ -79,17 +79,17 @@ struct RFID_info {
 
 // --- SNARC_PLUS Board Config ---
 #ifdef SNARC_PLUS
+
     #include "leds_generic.h"
     #define LEDS         generic_leds
 
+    #define DOOR_PIN           8 //5
     #define ETHERNET_CS        4
     #define ETHERNET_RESET_PIN 7
     #define AT45DB_CS          17
 
     #define INT_ETHERNET       0
     #define INT_USER           1
-    
-    #define DOOR_PIN           8 //5
 
     #define LED_PIN_RED    5
     #define LED_PIN_YELLOW 6
@@ -99,12 +99,21 @@ struct RFID_info {
     #define LED_DEFINED 3
 
 #elif defined SNARC
-    #include "leds_snarc.h"
+
+    #include "leds_generic.h"
     #define LEDS         generic_leds
+
+    #define DOOR_PIN            5
+    #define ETHERNET_CS         10
+    #define ETHERNET_RESET_PIN  8
     
-    #define DOOR_PIN    5
+    #define LED_PIN_RED    17
+    #define LED_PIN_YELLOW 18
+    #define LED_PIN_GREEN  19
     
-    #define ETHERNET_CS 10
+    #define LED_PINS    {LED_PIN_RED, LED_PIN_YELLOW, LED_PIN_GREEN}
+    #define LED_DEFINED 3
+    
 #else
     #error No Board Defined!
 #endif

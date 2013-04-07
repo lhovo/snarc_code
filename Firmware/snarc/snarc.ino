@@ -21,6 +21,7 @@ void setup()
     Serial.print(" id:");
     Serial.println(mySettings.id);
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
+    DOOR.init();
     
     attachInterrupt(INT_USER, userInterupt, CHANGE);
 }
