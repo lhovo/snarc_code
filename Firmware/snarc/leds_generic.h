@@ -50,9 +50,6 @@
 
 class LEDS_GENERIC
 {
-    unsigned int  leds, led_count; 
-    unsigned long ledToggle;
-    unsigned int  pins[8];
     public:
         void init(unsigned int *pins_init, unsigned int pins_defined);
         
@@ -64,6 +61,10 @@ class LEDS_GENERIC
         void pwm(unsigned int ledv, int value);
     private:
         void show_leds(unsigned int changed, int intensity);
+        
+        unsigned int  leds, led_count; 
+        unsigned long ledToggle;
+        unsigned int  pins[8];
 };
 
 extern LEDS_GENERIC generic_leds;
