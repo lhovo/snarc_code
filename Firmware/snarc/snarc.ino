@@ -5,15 +5,17 @@
 #include <EEPROM.h>
 #include <Time.h>
 
+DeviceInfo mySettings;
+unsigned long rfidTag;
+char globalBuffer[GLOBAL_BUFFER_LEN];
+
 void setup()
 {    
-    DeviceInfo mySettings;
     unsigned int leds_init[] = LED_PINS;
     
     MENU.init(19200); // Set the TX/RX pins to 19200
     LEDS.init(leds_init, LED_DEFINED);
     RFID.init();
-    RFID.reading_callback(rfid_alert_user);
     MEMORY.init();
     MEMORY.getNetworkInfo(&mySettings);
     Serial.print(F("Device name: "));
@@ -27,34 +29,44 @@ void setup()
 }
 
 void loop()
-{
-    unsigned long rfidTag;
-    
+{   
     LEDS.toggle(LEDS_YELLOW, 2000);
     MENU.check();
     
     if(RFID.read(&rfidTag))
     {
-        if(MEMORY.accessAllowed(rfidTag))
+        MEMORY.getNetworkInfo(&mySettings);
+        
+        if(MEMORY.accessAllowed(&rfidTag))
         {
             Serial.println(rfidTag);
             LEDS.off(LEDS_YELLOW);
             LEDS.on(LEDS_GREEN);
-            DOOR.unlockDoor(2000); // open door for 2 seconds
+            DOOR.unlockDoor(2000, &rfidTag, &mySettings.id); // open door for 2 seconds
             LEDS.off(LEDS_GREEN);
+        }
+        else if (ETHERNET.check_tag(&rfidTag, &mySettings.id) > 0)
+        {    
+             DOOR.unlockDoor(2000); // open door for 2 seconds
+             
+             // Record Card for next time
+             RFID_info newCard = {rfidTag, now()+SECS_PER_WEEK};
+             MEMORY.storeAccess(&newCard);
         }
         else
         {
             LEDS.blink(LEDS_RED);
         }
     }
+    ETHERNET.listen();
 }
 
-void rfid_alert_user()
+void userInterupt()
 {
-  LEDS.on(LEDS_YELLOW);
+  
 }
 
+/*
 void led_test()
 {
     int i, j;
@@ -84,8 +96,4 @@ void led_test()
     delay(1000);
     LEDS.off(LEDS_ALL);
 }
-
-void userInterupt()
-{
-  
-}
+*/

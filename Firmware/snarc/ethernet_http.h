@@ -37,8 +37,8 @@ class ETHERNET_HTTP
     public:
         void init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server);
         void print_settings(void);
-        boolean check_connection();
-        int check_tag(long tag, int door);
+        int check_tag(unsigned long *tag, unsigned int *door);
+        void listen(void);
     private:
 };
 

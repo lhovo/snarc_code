@@ -35,30 +35,14 @@
 #define RFID_BAUD_RATE 9600
 #endif
 
-struct RFIDTag {
-	int mfr;         // Manufacturer (?) Code (2 bytes), only useful in UART Mode
-	long id;         // Tag ID (3 bytes)
-	byte chk;        // Checksum (1 byte), only useful in UART Mode
-	boolean valid;   // Validity of the Tag, based on the Checksum (UART Mode) or the parity bits (Wiegand Mode)
-	char raw[13];    // The whole tag as a raw string, only useful in UART Mode
-};
-
-typedef void (*card_callback_t)(void);
-
 class RFID_SEEED_125
 {
-    card_callback_t reading_card;
-    
     public:
         void init(void);
         
         // Try read a RFID Tag, last_code will be updated if tag found
         // Returns True on successful tag read, False otherwise
         boolean read(unsigned long *last_code);
-        
-        // Register a user callback function to allow us to blink some leds or something before the card has finished being read.
-        // This is totaly optional and only saves a fraction of a second.
-        void reading_callback(card_callback_t card_read);
     private:
         long hex2dec(String hexCode);
         void clear(void);

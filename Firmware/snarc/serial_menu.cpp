@@ -115,7 +115,7 @@ void SERIAL_MENU::display(void)
                     // Make the card expire a week from now
                     newCard.expiration = now()+SECS_PER_WEEK;
                     
-                    if(MEMORY.storeAccess(newCard))
+                    if(MEMORY.storeAccess(&newCard))
                     {
                         Serial.print(F("-- "));
                         Serial.print(newCard.card);
@@ -140,7 +140,7 @@ void SERIAL_MENU::display(void)
                     // Wait for card to be read
                     while(!RFID.read(&newCard.card)){}
                     
-                    if(MEMORY.expireAccess(newCard.card))
+                    if(MEMORY.expireAccess(&newCard.card))
                     {
                         Serial.print(F("-- "));
                         Serial.print(newCard.card);
@@ -263,14 +263,13 @@ void SERIAL_MENU::display(void)
 
 void SERIAL_MENU::prompt(void)
 {
-    Serial.println();
-    Serial.println(F("PROGRAM MODE:"));
+    Serial.println(F("\nPROGRAM MODE:"));
     Serial.println(F("c - print card list"));
     Serial.println(F("k - program new key to EEPROM"));
     Serial.println(F("z - expire a single card from EEPROM"));
     Serial.println(F("u - Ask server to give us a card update"));
-    Serial.println(F("w - wipe and initialise EEPROM (dangerous!) "));
-    Serial.println();
+    Serial.println(F("w - wipe and initialise EEPROM (dangerous!) \n"));
+    
     Serial.println(F("-- Options below need to be saved after change --"));
     Serial.println(F("d - set device name"));
     Serial.println(F("t - set device identification"));
@@ -282,8 +281,8 @@ void SERIAL_MENU::prompt(void)
     Serial.println(F("a - set server address"));
     Serial.println(F("s - save changes"));
     Serial.println(F("p - print node config"));
-    Serial.println(F("e - print loaded ethernet settings"));
-    Serial.println();
+    Serial.println(F("e - print loaded ethernet settings\n"));
+    
     Serial.println(F("x - exit programming mode"));
 }
 
@@ -321,7 +320,7 @@ void SERIAL_MENU::print_node_config(DeviceInfo *settings)
     Serial.print(settings->mac[4],16);
     Serial.print(":");
     Serial.println(settings->mac[5],16);
-
+    
     Serial.println(F("----------------------------------------------"));
     
 }
@@ -334,7 +333,7 @@ void SERIAL_MENU::listen_for_ipaddress(IPAddress *change)
     
     boolean keepReading = true;
     int     serial_recieve_index = 0;
-    char    charIP[15]; // there is a max of 15 chars - 255.255.255.255
+//    char    charIP[15]; // there is a max of 15 chars - 255.255.255.255
     
     clear_serial_buffer();
     
@@ -348,7 +347,7 @@ void SERIAL_MENU::listen_for_ipaddress(IPAddress *change)
                 keepReading = false;
                 break;
             }
-            charIP[serial_recieve_index++] = Serial.read();
+            globalBuffer[serial_recieve_index++] = Serial.read();
             if (serial_recieve_index >= 15) // there is a max of 15 chars - 255.255.255.255
             {
                 // max length. End entry
@@ -368,25 +367,26 @@ void SERIAL_MENU::listen_for_ipaddress(IPAddress *change)
     {
        // Proccess the ip address and make it a number 
        int part[4];
-       String ipAddressString = charIP;
-       // Find the three dots
-       part[0] = ipAddressString.indexOf('.');
-       part[1] = ipAddressString.indexOf('.', part[0]+1);
-       part[2] = ipAddressString.indexOf('.', part[1]+1);
-       
-       if(part[2] != ipAddressString.lastIndexOf('.'))
+//       String ipAddressString = globalBuffer;
+//       // Find the three dots
+//       part[0] = ipAddressString.indexOf('.');
+//       part[1] = ipAddressString.indexOf('.', part[0]+1);
+//       part[2] = ipAddressString.indexOf('.', part[1]+1);
+//       
+//       if(part[2] != ipAddressString.lastIndexOf('.'))
+//       {
+//          Serial.println(F("ERROR.. There are too many '.' in the input string"));
+//          return; 
+//       }
+
+       serial_recieve_index = sscanf(globalBuffer, "%d.%d.%d.%d", part, part+1, part+2, part+3);
+       if(serial_recieve_index == 4)
        {
-          Serial.println(F("ERROR.. There are too many '.' in the input string"));
-          return; 
+          *change = IPAddress(part[0], part[1], part[2], part[3]);
+          Serial.print(F("IP set to: "));
+          Serial.println(*change);
+          changesMade = true;
        }
-       
-       //atoi(valueArray)
-       //myString.toInt();
-       sscanf(charIP, "%d.%d.%d.%d", part, part+1, part+2, part+3);
-       *change = IPAddress(part[0], part[1], part[2], part[3]);
-       Serial.print(F("IP set to: "));
-       Serial.println(*change);
-       changesMade = true;
     }
 }
 

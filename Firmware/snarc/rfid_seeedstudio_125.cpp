@@ -41,87 +41,70 @@ SoftwareSerial RFID_SEED_125_Serial(RFID_RX_PIN, RFID_TX_PIN);
 void RFID_SEEED_125::init(void)
 {
     RFID_SEED_125_Serial.begin(RFID_BAUD_RATE);
-    reading_card = NULL;
 }
 
+// Some of the code here was copied from
+// https://github.com/johannrichard/SeeedRFIDLib
 boolean RFID_SEEED_125::read(unsigned long *last_code)
 {
-  RFIDTag tag;
-  int bytesRead, timeout;
-  char in;
+  int timeout;   // Provide some way of exiting the while loop if no chars come
+  int bytesRead; // Number of bytes read
+  char in;       // The current byte in the buffer
+  
+//*last_code;      // Tag ID (3 bytes)
+	byte chk;        // Checksum (1 byte)
 
-  tag.valid = false;
-      
-  if (RFID_SEED_125_Serial.available()) // Starts with a 0x02 Ends with 0x03
+  // Starts with a 0x02 Ends with 0x03
+  if(RFID_SEED_125_Serial.available() && (in = RFID_SEED_125_Serial.read()) == 0x02)
   {
-    if((in = RFID_SEED_125_Serial.read()) == 0x02)
-    {
-        bytesRead = 0;
-        tag.mfr   = 0;
-        tag.id    = 0;
-        tag.chk   = 0;
-        
-        if(reading_card != NULL)
-        {
-          reading_card();
-        }
+      bytesRead  = 0;
+              
+      timeout = 0;
+      while(!RFID_SEED_125_Serial.available() && (timeout++ < RFID_TIMEOUT_COUNT)){}
+      if(timeout >= RFID_TIMEOUT_COUNT) { return false; }
+      
+      
+      while((in = RFID_SEED_125_Serial.read()) != 0x03)
+      {
+        globalBuffer[bytesRead++] = in;
         
         timeout = 0;
         while(!RFID_SEED_125_Serial.available() && (timeout++ < RFID_TIMEOUT_COUNT)){}
         if(timeout >= RFID_TIMEOUT_COUNT) { return false; }
-        
-        
-        while((in = RFID_SEED_125_Serial.read()) != 0x03)
-        {
-          tag.raw[bytesRead++] = in;
-          
-          timeout = 0;
-          while(!RFID_SEED_125_Serial.available() && (timeout++ < RFID_TIMEOUT_COUNT)){}
-          if(timeout >= RFID_TIMEOUT_COUNT) { return false; }
-        }
-        // ID completely read
-        byte checksum = 0;
-        String id = tag.raw;
+      }
+      // ID completely read
+      byte checksum = 0;
+      String str_id = globalBuffer;
     
-        tag.mfr = hex2dec(id.substring(0,4));
-        tag.id  = hex2dec(id.substring(4,10));
-        tag.chk = hex2dec(id.substring(10,12));
+      //mfr = hex2dec(str_id.substring(0,4)); // We dont care about the manufature id..
+      *last_code  = hex2dec(str_id.substring(4,10));
+      chk         = hex2dec(str_id.substring(10,12));
     
-        // Do checksum calculation
-        int i2;		
-        for(int i = 0; i < 5; i++) {
-          i2 = 2*i;
-    	checksum ^= hex2dec(id.substring(i2,i2+2));
-        }
+      // Do checksum calculation
+      for(int i = 0; i < 5; i++) {
+        checksum ^= hex2dec(str_id.substring(i*2,(i*2)+2));
+      }
     
-        if (checksum == tag.chk)
-        {
-          tag.valid = true;
-          //Serial.println("Recived");
-          //Serial.println(tag.id);
-          *last_code = tag.id;
-        }
-    //      else
-    //      {
-    //        Serial.println("Bad CRC");
-    //      }
-    }
+      if (checksum == chk)
+      {
+        //Serial.print("Recived ");
+        //Serial.println(*last_code);
+        return true;
+      }
+//      else
+//      {
+//        Serial.println("Bad CRC");
+//      }
   }
-  return tag.valid;
-}
-
-void RFID_SEEED_125::reading_callback(card_callback_t card_read)
-{
-  reading_card = card_read;
+  return false;
 }
 
 // Convert a HEX String to a decimal value (up to 8 bytes (16 hex characters))
 long RFID_SEEED_125::hex2dec(String hexCode) {
-  char buf[19] = "";
   hexCode = "0x" + hexCode;
-  hexCode.toCharArray(buf, 18);
+  hexCode.toCharArray(globalBuffer, 18);
   
-  return strtol(buf, NULL, 0);
+  return strtol(globalBuffer, NULL, 0);
 }
 
 void RFID_SEEED_125::clear(void)

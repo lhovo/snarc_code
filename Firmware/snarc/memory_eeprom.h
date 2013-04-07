@@ -41,9 +41,9 @@ class MEMORY_EEPROM
         bool storeNetworkInfo(DeviceInfo *device);
         bool getNetworkInfo(DeviceInfo *device);
         
-        bool storeAccess(RFID_info access); 
-        bool accessAllowed(unsigned long rfid);
-        bool expireAccess(unsigned long rfid);
+        bool storeAccess(RFID_info *access); 
+        bool accessAllowed(unsigned long *rfid);
+        bool expireAccess(unsigned long *rfid);
         
         void printAccessList(void);
         bool erase(void);

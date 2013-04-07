@@ -49,6 +49,9 @@
 #include <Time.h>
 
 #define MEMORY_DEVICE_NAME_MAX_LENGTH 12
+#define GLOBAL_BUFFER_LEN             40
+
+extern char globalBuffer[GLOBAL_BUFFER_LEN];
 
 // Declare Client info to be stored
 struct DeviceInfo {

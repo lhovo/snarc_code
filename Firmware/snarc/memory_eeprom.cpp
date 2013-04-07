@@ -172,7 +172,7 @@ void MEMORY_EEPROM::defaultOutput(boolean isStart)
 }
 
 // Find if card is in memory, if so update the time, if not add it.
-bool MEMORY_EEPROM::storeAccess(RFID_info access)
+bool MEMORY_EEPROM::storeAccess(RFID_info *access)
 {
     unsigned int i,j;
     RFID_info entry;
@@ -186,10 +186,10 @@ bool MEMORY_EEPROM::storeAccess(RFID_info access)
         
         if(entry.card != 0xFFFFFFFF)
         {
-            if(entry.card == access.card)
+            if(entry.card == access->card)
             {
                 // Only update if the info has changed
-                if(access.expiration != entry.expiration)
+                if(access->expiration != entry.expiration)
                 {
                     // Write new data to the same location
                     for(j=sizeof(entry.card);j<MEMORY_RFID_LENGTH;j++)
@@ -214,7 +214,7 @@ bool MEMORY_EEPROM::storeAccess(RFID_info access)
 }
 
 // Returns true if card is valid and hasn't expired
-bool MEMORY_EEPROM::accessAllowed(unsigned long rfid)
+bool MEMORY_EEPROM::accessAllowed(unsigned long *rfid)
 {
     unsigned int i,j;
     RFID_info entry;
@@ -228,7 +228,7 @@ bool MEMORY_EEPROM::accessAllowed(unsigned long rfid)
         
         if(entry.card != 0xFFFFFFFF)
         {
-            if(entry.card == rfid)
+            if(entry.card == *rfid)
             {
                 // If we havent got the time just let them in..
                 if(entry.expiration != 0 && (timeStatus() != timeSet || now() < entry.expiration))
@@ -251,7 +251,7 @@ bool MEMORY_EEPROM::accessAllowed(unsigned long rfid)
 }
 
 // Set the timestamp to zero
-bool MEMORY_EEPROM::expireAccess(unsigned long rfid)
+bool MEMORY_EEPROM::expireAccess(unsigned long *rfid)
 {
     unsigned int i,j;
     RFID_info entry;
@@ -266,7 +266,7 @@ bool MEMORY_EEPROM::expireAccess(unsigned long rfid)
         Serial.println(entry.card);
         if(entry.card != 0xFFFFFFFF)
         {
-            if(entry.card == rfid)
+            if(entry.card == *rfid)
             {
                 // Only update if the info has changed
                 if(entry.expiration != 0)
