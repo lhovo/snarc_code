@@ -102,21 +102,15 @@ bool MEMORY_EEPROM::getNetworkInfo(DeviceInfo *device)
     }
     
     // Mac Address Default
-    valid = false;
-    for(i=0;i<6 && !valid;i++)
-    {
-        if(device->mac[i] != 0xff)
-        {
-            valid = true;
-        }
-    }
-    if(!valid)
+    if(device->mac[0] != 0x02 || device->mac[1] != 0x08 || device->mac[2] != 0xDC)
     {
        defaultOutput(true);
-       Serial.println(F("Using Default Mac Address - DE:AD:BE:EF:FE:ED"));
-       device->mac[0] = 0xDE;
-       device->mac[1] = 0xAD;
-       device->mac[2] = 0xBE;
+       Serial.println(F("Using Default Mac Address - 02:08:DC:EF:FE:ED"));
+       // Static OUI (Organizationally Unique Identifier)
+       device->mac[0] = 0x02;
+       device->mac[1] = 0x08;
+       device->mac[2] = 0xDC;
+       // NIC (Network Interface Controller)
        device->mac[3] = 0xEF;
        device->mac[4] = 0xFE;
        device->mac[5] = 0xED;

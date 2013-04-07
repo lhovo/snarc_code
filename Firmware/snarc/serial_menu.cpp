@@ -308,13 +308,8 @@ void SERIAL_MENU::print_node_config(DeviceInfo *settings)
     Serial.print(F("Server:   "));
     Serial.println((IPAddress) settings->server);
 
-    Serial.print(F("Mac:      "));
-    Serial.print(settings->mac[0],16);
-    Serial.print(":");
-    Serial.print(settings->mac[1],16);
-    Serial.print(":");
-    Serial.print(settings->mac[2],16);
-    Serial.print(":");
+    // We know the first Half as it's Static, lets save some code space and just print it :)
+    Serial.print(F("Mac:      02:08:DC"));
     Serial.print(settings->mac[3],16);
     Serial.print(":");
     Serial.print(settings->mac[4],16);
@@ -333,7 +328,6 @@ void SERIAL_MENU::listen_for_ipaddress(IPAddress *change)
     
     boolean keepReading = true;
     int     serial_recieve_index = 0;
-//    char    charIP[15]; // there is a max of 15 chars - 255.255.255.255
     
     clear_serial_buffer();
     
@@ -367,17 +361,6 @@ void SERIAL_MENU::listen_for_ipaddress(IPAddress *change)
     {
        // Proccess the ip address and make it a number 
        int part[4];
-//       String ipAddressString = globalBuffer;
-//       // Find the three dots
-//       part[0] = ipAddressString.indexOf('.');
-//       part[1] = ipAddressString.indexOf('.', part[0]+1);
-//       part[2] = ipAddressString.indexOf('.', part[1]+1);
-//       
-//       if(part[2] != ipAddressString.lastIndexOf('.'))
-//       {
-//          Serial.println(F("ERROR.. There are too many '.' in the input string"));
-//          return; 
-//       }
 
        serial_recieve_index = sscanf(globalBuffer, "%d.%d.%d.%d", part, part+1, part+2, part+3);
        if(serial_recieve_index == 4)
