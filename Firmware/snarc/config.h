@@ -33,7 +33,7 @@
 //#define USE_FLASH_AT45DB
 
 // ------ Door Settings ------
-// #define DOOR_INVERT_PIN
+// #define DOOR_INVERT_PIN // Invert the pin logic to the output Relay/Mosfet
 
 // ------ Ethernet Protocol ------
 #define USE_ETHERNET_HTTP
@@ -44,13 +44,6 @@
  *      END OF USER CONFIG OPTIONS
  * -------------------------------------
  */
-
-// --- Setup LED Defines ---
-// Though you may have less colours define them anyway
-#define LEDS_RED    1
-#define LEDS_YELLOW 2
-#define LEDS_GREEN  4
-#define LEDS_ALL    (LEDS_RED | LEDS_YELLOW | LEDS_GREEN)
 
 #include <Ethernet.h>
 #include <Time.h>
@@ -77,13 +70,19 @@ struct RFID_info {
 #include "serial_menu.h"
 #define MENU SNARC_SERIAL_MENU
 
+// --- Setup LED Defines ---
+// Though you may have less colours define them anyway
+#define LEDS_RED    1<<0
+#define LEDS_YELLOW 1<<1
+#define LEDS_GREEN  1<<2
+#define LEDS_ALL    (LEDS_RED | LEDS_YELLOW | LEDS_GREEN)
+
 // --- SNARC_PLUS Board Config ---
 #ifdef SNARC_PLUS
-    #include "leds_snarc_plus.h"
-    #define LEDS         SNARCPlusLEDS
-//    #define DISPLAY_LEDS SNARCPlusLEDS // Need to thiank about this somemore, thinking about I2C interface
+    #include "leds_generic.h"
+    #define LEDS         generic_leds
 
-    #define ETHERNET_CS        4  /* I need to find some way of passing this to the driver, presently includes arnt working */
+    #define ETHERNET_CS        4
     #define ETHERNET_RESET_PIN 7
     #define AT45DB_CS          17
 
@@ -92,9 +91,16 @@ struct RFID_info {
     
     #define DOOR_PIN           8 //5
 
+    #define LED_PIN_RED    5
+    #define LED_PIN_YELLOW 6
+    #define LED_PIN_GREEN  9
+    
+    #define LED_PINS    {LED_PIN_RED, LED_PIN_YELLOW, LED_PIN_GREEN}
+    #define LED_DEFINED 3
+
 #elif defined SNARC
     #include "leds_snarc.h"
-    #define LEDS         SNARC_LEDS
+    #define LEDS         generic_leds
     
     #define DOOR_PIN    5
     
@@ -136,7 +142,7 @@ struct RFID_info {
 //#elif defined USE_ETHERNET_HTTP_SERVER
 
 #else
-    #error NO MEMORY DEFINED
+    #error NO ETHERNET DEFINED
 #endif
 
 

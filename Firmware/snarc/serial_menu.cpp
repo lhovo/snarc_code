@@ -88,7 +88,7 @@ void SERIAL_MENU::display(void)
     
     while( incomingByte != -1 )
     {
-        LEDS.on(LEDS_RED); // RED FLASH FOR PROGRAMMING MODE
+        LEDS.toggle(LEDS_RED, 400); // RED FLASH FOR PROGRAMMING MODE
         
         if ( Serial.available() )
         {
@@ -254,12 +254,9 @@ void SERIAL_MENU::display(void)
             }
             clear_serial_buffer();
         } // if
-        delay(200);
-        LEDS.off(LEDS_RED); // RED FLASH FOR PROGRAMMING MODE
-        delay(200);
     } //while
     
-    LEDS.off(LEDS_RED);
+    LEDS.off(LEDS_ALL);
     Serial.println("Exited Program Mode");
 }
 

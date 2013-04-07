@@ -19,46 +19,53 @@
 #include "config.h"
 #include "Arduino.h" 
  
-#ifndef __LEDS_H__
-#define __LEDS_H__
+#ifndef __LEDS_GENERIC_H__
+#define __LEDS_GENERIC_H__
+
+/*
+// Some of the Variables that should be defined in your config/program
 
 #define LED_PIN_RED    5
 #define LED_PIN_YELLOW 6
 #define LED_PIN_GREEN  9
+#define LED_PINS       {LED_PIN_RED, LED_PIN_YELLOW, LED_PIN_GREEN}
+#define LED_DEFINED 3
 
 #ifndef LEDS_RED
-#define LEDS_RED    1
+#define LEDS_RED    1<<0
 #endif
 
 #ifndef LEDS_YELLOW
-#define LEDS_YELLOW 2
+#define LEDS_YELLOW 1<<1
 #endif
 
 #ifndef LEDS_GREEN
-#define LEDS_GREEN 4
+#define LEDS_GREEN  1<<2
 #endif
 
 #ifndef LEDS_ALL
 #define LEDS_ALL    (LEDS_RED | LEDS_YELLOW | LEDS_GREEN)
 #endif
+*/
 
-class SNARC_PLUS_LEDS
+class LEDS_GENERIC
 {
-    unsigned char leds, invert; 
+    unsigned int  leds, led_count; 
     unsigned long ledToggle;
+    unsigned int  pins[8];
     public:
-        void init(void);
+        void init(unsigned int *pins_init, unsigned int pins_defined);
         
-        void on(unsigned char ledv);
-        void off(unsigned char ledv);
-        void toggle(unsigned char ledv);
-        void toggle(unsigned char ledv, unsigned int miliseconds);
-        void blink(unsigned char ledv);
-        void pwm(unsigned char ledv, int value);
+        void on(unsigned int ledv);
+        void off(unsigned int ledv);
+        void toggle(unsigned int ledv);
+        void toggle(unsigned int ledv, unsigned int miliseconds);
+        void blink(unsigned int ledv);
+        void pwm(unsigned int ledv, int value);
     private:
-        void show_leds(unsigned char changed, int intensity);
+        void show_leds(unsigned int changed, int intensity);
 };
 
-extern SNARC_PLUS_LEDS SNARCPlusLEDS;
+extern LEDS_GENERIC generic_leds;
 
-#endif /* __LEDS_H__ */
+#endif /* __LEDS_GENERIC_H__ */

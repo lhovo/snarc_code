@@ -20,7 +20,7 @@
  * Includes
  ******************************************************************************/
 
-#include "leds_snarc_plus.h"
+#include "leds_generic.h"
 
 /******************************************************************************
  * Definitions
@@ -34,82 +34,84 @@
  * User API
  ******************************************************************************/
 
-void SNARC_PLUS_LEDS::init(void)
+void LEDS_GENERIC::init(unsigned int *pins_init, unsigned int pins_defined)
 {
-  pinMode(LED_PIN_RED,    OUTPUT);
-  pinMode(LED_PIN_GREEN,  OUTPUT);
-  pinMode(LED_PIN_YELLOW, OUTPUT);
-  digitalWrite(LED_PIN_RED,    LOW);
-  digitalWrite(LED_PIN_GREEN,  LOW);
-  digitalWrite(LED_PIN_YELLOW, LOW);
-  leds = invert = 0;
+  unsigned int i;
+  led_count = pins_defined;
+  
+  for(i=0; i<led_count; i++)
+  {
+    pins[i] = pins_init[i];
+    pinMode(pins[i],    OUTPUT);
+    digitalWrite(pins[i],    LOW);
+  }
+  
+  leds = 0;
 }
 
-void SNARC_PLUS_LEDS::show_leds(unsigned char changed, int intensity)
+void LEDS_GENERIC::show_leds(unsigned int changed, int intensity)
 {
-  if(changed & LEDS_GREEN) {
-    /* Green did change */
-    if((invert ^ leds) & LEDS_GREEN) {
-      analogWrite(LED_PIN_GREEN,    intensity);
-    } else {
-      digitalWrite(LED_PIN_GREEN,    LOW);
-    }
-  }
-  if(changed & LEDS_YELLOW) {
-    if((invert ^ leds) & LEDS_YELLOW) {
-      analogWrite(LED_PIN_YELLOW,    intensity);
-    } else {
-      digitalWrite(LED_PIN_YELLOW,    LOW);
-    }
-  }
-  if(changed & LEDS_RED) {
-    if((invert ^ leds) & LEDS_RED) {
-      analogWrite(LED_PIN_RED,    intensity);
-    } else {
-      digitalWrite(LED_PIN_RED,    LOW);
+  unsigned int i;
+  for(i=0; i<led_count; i++)
+  {
+    /* has this led change? */
+    if(changed & 1<<i)
+    {
+      if(leds & 1<<i)
+      {
+        analogWrite(pins[i],  intensity);
+      }
+      else
+      {
+        digitalWrite(pins[i], LOW);
+      }
     }
   }
 }
 
-void SNARC_PLUS_LEDS::on(unsigned char ledv)
+void LEDS_GENERIC::on(unsigned int ledv)
 {
-  unsigned char changed;
+  unsigned int changed;
   changed = (~leds) & ledv;
   leds |= ledv;
   show_leds(changed, 0xff);
 }
 
-void SNARC_PLUS_LEDS::off(unsigned char ledv)
+void LEDS_GENERIC::off(unsigned int ledv)
 {
-  unsigned char changed;
+  unsigned int changed;
   changed = leds & ledv;
   leds &= ~ledv;
   show_leds(changed, 0x00);
 }
 
-void SNARC_PLUS_LEDS::toggle(unsigned char ledv)
+void LEDS_GENERIC::toggle(unsigned int ledv)
 {
-  invert = invert ^ ledv;
+  unsigned int changed  = ledv & leds;
+  
+  leds |= (~changed & ledv);
+  leds &= ~changed;
+  
   show_leds(ledv, 0xff);
 }
 
-void SNARC_PLUS_LEDS::toggle(unsigned char ledv, unsigned int miliseconds)
+void LEDS_GENERIC::toggle(unsigned int ledv, unsigned int miliseconds)
 {
-    if (millis() > ledToggle + miliseconds)
-    {
-        ledToggle = millis();
-        toggle(ledv);
-    }
+  if (millis() > ledToggle + miliseconds)
+  {
+    ledToggle = millis();
+    toggle(ledv);
+  }
 }
 
-void SNARC_PLUS_LEDS::blink(unsigned char ledv)
+void LEDS_GENERIC::blink(unsigned int ledv)
 {
   toggle(ledv);
   delay(400);
   toggle(ledv);
 }
 
-void SNARC_PLUS_LEDS::pwm(unsigned char ledv, int value)
+void LEDS_GENERIC::pwm(unsigned int ledv, int value)
 {  
   if (value > 0)
   {
@@ -130,4 +132,4 @@ void SNARC_PLUS_LEDS::pwm(unsigned char ledv, int value)
   }
 }
 
-SNARC_PLUS_LEDS SNARCPlusLEDS;
+LEDS_GENERIC generic_leds;

@@ -8,9 +8,10 @@
 void setup()
 {    
     DeviceInfo mySettings;
+    unsigned int leds_init[] = LED_PINS;
     
     MENU.init(19200); // Set the TX/RX pins to 19200
-    LEDS.init();
+    LEDS.init(leds_init, LED_DEFINED);
     RFID.init();
     RFID.reading_callback(rfid_alert_user);
     MEMORY.init();
