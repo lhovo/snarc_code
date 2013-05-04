@@ -188,7 +188,7 @@ bool MEMORY_EEPROM::storeAccess(RFID_info *access)
                     // Write new data to the same location
                     for(j=sizeof(entry.card);j<MEMORY_RFID_LENGTH;j++)
                     {
-                        EEPROM.write(i+j, ((byte*) &access)[j]);
+                        EEPROM.write(i+j, ((byte*) access)[j]);
                     }
                 }
                 return true;
@@ -199,7 +199,7 @@ bool MEMORY_EEPROM::storeAccess(RFID_info *access)
             // Write new data to this empty slot
             for(j=0;j<MEMORY_RFID_LENGTH;j++)
             {
-                EEPROM.write(i+j, ((byte*) &access)[j]); 
+                EEPROM.write(i+j, ((byte*) access)[j]); 
             }
             return true;
         }

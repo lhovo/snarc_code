@@ -38,6 +38,10 @@ EthernetServer localserver(80);
 
 void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server)
 {
+#ifdef ETHERNET_RESET_PIN
+    pinMode(ETHERNET_RESET_PIN, OUTPUT);
+    digitalWrite(ETHERNET_RESET_PIN, HIGH);
+#endif
     delay(1000);   // delay boot by precautionary 1sec 
     Ethernet.begin(mac,ip,gateway,subnet, ETHERNET_CS);    
     serverIP = server;
@@ -95,7 +99,6 @@ int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned int *door)
       client.print("&d=");
       client.println(*door);
       client.println();
-      Serial.println(F("http client finished"));
     }
     else
     {
@@ -123,6 +126,7 @@ int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned int *door)
     
     // We have all the info we need, so disconnect..
     client.stop();
+    Serial.println(F("http client finished"));
     
     if ( x >= GLOBAL_BUFFER_LEN )
     {

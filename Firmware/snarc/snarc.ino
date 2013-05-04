@@ -24,7 +24,7 @@ void setup()
     Serial.println(mySettings.id);
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     DOOR.init();
-    
+    DOOR.unlockDoor(2000); // open door for 2 seconds
     attachInterrupt(INT_USER, userInterupt, CHANGE);
 }
 
@@ -36,22 +36,25 @@ void loop()
     if(RFID.read(&rfidTag))
     {
         MEMORY.getNetworkInfo(&mySettings);
+        Serial.print(F("RFID Tag:"));
+        Serial.println(rfidTag);
+        LEDS.off(LEDS_YELLOW);
         
         if(MEMORY.accessAllowed(&rfidTag))
         {
-            Serial.println(rfidTag);
-            LEDS.off(LEDS_YELLOW);
             LEDS.on(LEDS_GREEN);
             DOOR.unlockDoor(2000, &rfidTag, &mySettings.id); // open door for 2 seconds
             LEDS.off(LEDS_GREEN);
         }
         else if (ETHERNET.check_tag(&rfidTag, &mySettings.id) > 0)
         {    
+             LEDS.on(LEDS_GREEN | LEDS_RED);
              DOOR.unlockDoor(2000); // open door for 2 seconds
              
              // Record Card for next time
              RFID_info newCard = {rfidTag, now()+SECS_PER_WEEK};
              MEMORY.storeAccess(&newCard);
+             LEDS.off(LEDS_GREEN | LEDS_RED);
         }
         else
         {

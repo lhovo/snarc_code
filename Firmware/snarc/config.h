@@ -86,7 +86,7 @@ struct RFID_info {
     #include "leds_generic.h"
     #define LEDS         generic_leds
 
-    #define DOOR_PIN           8 //5
+    #define DOOR_PIN           8
     #define ETHERNET_CS        4
     #define ETHERNET_RESET_PIN 7
     #define AT45DB_CS          17
