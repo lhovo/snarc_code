@@ -4,6 +4,27 @@
 #include <SPI.h>
 #include <EEPROM.h>
 #include <Time.h>
+/*
+ *   Simple NetworkAble RFID Controller firmware, for SNARC, SNARC+ and Arduino+Ethernet comptible hardware.
+ *   Copyright (C) 2013 Luke Hovigton & David Bussenschutt. All right reserved.
+ */
+ 
+// TODO: 
+// flash library ( external chip) not implemented
+// socket library
+// ntp
+// wiznet hardware reset  ( take it from here:  https://github.com/davidbuzz/snarc/commit/f9e2aebe93cdc947fb6ceb957dfbb667a1da71f0 ) 
+// time library not fully tested ( for onboard card expiry ) 
+// estop ( user interrupt )  
+// http web interface ( crashes sometimes ) 
+// watchdog reset 
+// password on web interface
+// random mac address -on-the-fly- initialisation 
+// "get current full list from server" menu option not implemented yet
+// push full list of auth data from server ( to http interface ) 
+// key revocation is tested and works ( by setting timestamp to zero ) 
+// make the hardware "zero configuration" with DHCP and some sort of registration process.
+
 
 DeviceInfo mySettings;
 unsigned long rfidTag;
