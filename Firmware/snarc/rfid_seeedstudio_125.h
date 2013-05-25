@@ -44,7 +44,7 @@ class RFID_SEEED_125
         // Returns True on successful tag read, False otherwise
         boolean read(unsigned long *last_code);
     private:
-        long hex2dec(String hexCode);
+        //long hex2dec(String hexCode);
         void clear(void);
 };
 

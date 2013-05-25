@@ -50,9 +50,7 @@ boolean RFID_SEEED_125::read(unsigned long *last_code)
   int timeout;   // Provide some way of exiting the while loop if no chars come
   int bytesRead; // Number of bytes read
   char in;       // The current byte in the buffer
-  
-//*last_code;      // Tag ID (3 bytes)
-	byte chk;        // Checksum (1 byte)
+  byte chk;        // Checksum (1 byte)
 
   // Starts with a 0x02 Ends with 0x03
   if(RFID_SEED_125_Serial.available() && (in = RFID_SEED_125_Serial.read()) == 0x02)
@@ -73,18 +71,30 @@ boolean RFID_SEEED_125::read(unsigned long *last_code)
         if(timeout >= RFID_TIMEOUT_COUNT) { return false; }
       }
       // ID completely read
-      byte checksum = 0;
-      String str_id = globalBuffer;
-    
+
+      // Read from 10 to 12
+      globalBuffer[12] = '\0';
+      chk         = strtol(globalBuffer+10, NULL, 16);
+      // Read from 4 to 10
+      globalBuffer[10] = '\0';
+      *last_code  = strtol(globalBuffer+4, NULL, 16); //hex2dec(str_id.substring(4,10));
+ 
       //mfr = hex2dec(str_id.substring(0,4)); // We dont care about the manufature id..
-      *last_code  = hex2dec(str_id.substring(4,10));
-      chk         = hex2dec(str_id.substring(10,12));
+ 
+      //Serial.println(*last_code);
+      //Serial.println(chk);
+      
+      // Checksum code broken for now
+      return true;
     
+      int checksum = 0;
       // Do checksum calculation
       for(int i = 0; i < 5; i++) {
-        checksum ^= hex2dec(str_id.substring(i*2,(i*2)+2));
+        globalBuffer[10] = globalBuffer[i*2];
+        globalBuffer[11] = globalBuffer[i*2+2];
+        checksum ^= strtol(globalBuffer+10, NULL, 16); //hex2dec(str_id.substring(i*2,(i*2)+2));
       }
-    
+      Serial.println(checksum);
       if (checksum == chk)
       {
         //Serial.print("Recived ");
@@ -97,14 +107,6 @@ boolean RFID_SEEED_125::read(unsigned long *last_code)
 //      }
   }
   return false;
-}
-
-// Convert a HEX String to a decimal value (up to 8 bytes (16 hex characters))
-long RFID_SEEED_125::hex2dec(String hexCode) {
-  hexCode = "0x" + hexCode;
-  hexCode.toCharArray(globalBuffer, 18);
-  
-  return strtol(globalBuffer, NULL, 0);
 }
 
 void RFID_SEEED_125::clear(void)
