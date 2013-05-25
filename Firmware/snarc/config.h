@@ -34,6 +34,8 @@
 
 // ------ Door Settings ------
 // #define DOOR_INVERT_PIN // Invert the pin logic to the output Relay/Mosfet
+#define ENABLE_ESTOP_AS_SAFETY_DEVICE
+#define ENABLE_ESTOP_AS_EGRESS_BUTTON
 
 // ------ Ethernet Protocol ------
 #define USE_ETHERNET_HTTP
@@ -157,6 +159,9 @@ struct RFID_info {
     #error NO ETHERNET DEFINED
 #endif
 
+#if defined ENABLE_ESTOP_AS_SAFETY_DEVICE && defined ENABLE_ESTOP_AS_EGRESS_BUTTON
+  #error You Cant use Estop for both "Safty" and "Egress"
+#endif
 
 // Workaround for http://gcc.gnu.org/bugzilla/show_bug.cgi?id=34734
 #ifdef PROGMEM
