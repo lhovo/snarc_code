@@ -101,10 +101,15 @@ int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned int *door)
       client.print("&d=");
       client.println(*door);
       client.println();
+      
+            // note the time that the connection was made:
+      lastConnectionTime = millis();
+
     }
     else
     {
     	Serial.println(F("http connection failed"));
+        client.stop();
     	return -1; // error code to say server offline, which is different to "0" , which means deny access.
     }
     
@@ -259,6 +264,8 @@ void ETHERNET_HTTP::listen(void)
 
 void ETHERNET_WIZNET_CHECKER::init(void)
 {
+  pollingInterval = 60;
+  lastConnectionTime = 0;
 }
 
     // If we've not had a successful http request in the last 60 seconds, then try to make one
@@ -308,6 +315,6 @@ void ETHERNET_WIZNET_CHECKER::wiznet_reset(void)
   delay(200);  
 }
 
-
+ETHERNET_WIZNET_CHECKER ethernetWiznetChecker;
 
 ETHERNET_HTTP ethernetHttp;

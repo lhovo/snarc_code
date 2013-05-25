@@ -37,7 +37,7 @@ void setup()
     unsigned int leds_init[] = LED_PINS;
     
     MENU.init(19200); // Set the TX/RX pins to 19200
-    LEDS.init(leds_init, LED_DEFINED);
+   // LEDS.init(leds_init, LED_DEFINED);
     RFID.init();
     MEMORY.init();
     MEMORY.getNetworkInfo(&mySettings);

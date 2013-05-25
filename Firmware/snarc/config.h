@@ -34,7 +34,7 @@
 
 // ------ Door Settings ------
 // #define DOOR_INVERT_PIN // Invert the pin logic to the output Relay/Mosfet
-#define ENABLE_ESTOP_AS_SAFETY_DEVICE
+//#define ENABLE_ESTOP_AS_SAFETY_DEVICE
 #define ENABLE_ESTOP_AS_EGRESS_BUTTON
 
 // ------ Ethernet Protocol ------
@@ -74,8 +74,6 @@ struct RFID_info {
 extern unsigned long rfidTag;
 extern DeviceInfo mySettings;
 
-const unsigned long pollingInterval = 60;  // maximum time between network checks, in seconds
-unsigned long lastConnectionTime = 0;          // last time you connected to the server, in milliseconds
 
 
 // --- Include the interactive serial menu ---
@@ -158,6 +156,7 @@ unsigned long lastConnectionTime = 0;          // last time you connected to the
 #ifdef USE_ETHERNET_HTTP
     #include "ethernet_http.h"
     #define ETHERNET ethernetHttp
+    #define NETWORKCHECKER ethernetWiznetChecker
 #elif defined USE_ETHERNET_SOCKET
     #include "ethernet_socket.h"
     #define ETHERNET ethernetSocket

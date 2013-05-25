@@ -46,7 +46,9 @@ class ETHERNET_HTTP
 class ETHERNET_WIZNET_CHECKER
 {
     //IPAddress serverIP;
-    
+    unsigned long pollingInterval;// = 60;  // maximum time between network checks, in seconds
+    unsigned long lastConnectionTime;// = 0;          // last time you connected to the server, in milliseconds
+
     public:
         void init(void);
         void listen(void);
