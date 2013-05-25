@@ -88,7 +88,7 @@ void ETHERNET_HTTP::print_settings(void)
     Serial.println(F("----------------------------------------------"));   
 }
 
-int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned int *door)
+int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned long int *door)
 {
    EthernetClient client;
    int client_recieve_pointer = 0, x = 0;
@@ -121,7 +121,7 @@ int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned int *door)
         if (client.available())
         {
             char c = client.read();
-            globalBuffer[client_recieve_pointer++] = c; //client.read();
+            globalBuffer[client_recieve_pointer++] = c;
         }
 
         // if the server's disconnected, stop reading info
@@ -147,17 +147,20 @@ int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned int *door)
     // recieved data is now in the string: client_recieve_data
     Serial.println(globalBuffer);
     
-    // we expect the permissions string to look like 'access:3' ( for permit ), or 'access:0' (for deny )
-    String Permissions =  String(globalBuffer);
+    // we expect the permissions string to look like 'access:1' ( for permit ), or 'access:0' (for deny )    
+    for (x=0;x<=GLOBAL_BUFFER_LEN;x++)
+    {
+        if( globalBuffer[x] == ':')
+        {
+           x++;
+           break; 
+        }
+    }
     
-    int colonPosition = Permissions.indexOf(':');
-
-    String scs = Permissions.substring(colonPosition + 1);  // as a "String" "object" starting from after the colon to the end!
-    char cs[10];
-    scs.toCharArray(cs,10); // same this as a char array "string" ( lower case)
+    // globalBuffer is a pointer, we are changing where this points to by adding x
+    int ci = atoi(globalBuffer+x); // as an int!  if this fails, it returns zero, which means no-access, so that's OK.
     Serial.print(F("perms from server:"));
-    Serial.println(cs);
-    int ci = atoi(cs); // as an int!  if this fails, it returns zero, which means no-access, so that's OK.
+    Serial.println(ci);
     
     // basic bound check,  return -1 on error .
     if ( ci < 0 || ci > 255 ) {
@@ -171,7 +174,7 @@ void ETHERNET_HTTP::listen(void)
 {
   // listen for incoming clients
   EthernetClient incomingclient = localserver.available();
-  String serverReadString;
+  int x = 0;
   
   if (incomingclient)
   {
@@ -188,10 +191,10 @@ void ETHERNET_HTTP::listen(void)
               // so you can send a reply
               
               //read char by char HTTP request into 100 byte buffer, toss rest away!
-              if (serverReadString.length() < 100)
+              if (x++ < GLOBAL_BUFFER_LEN)
               {
                   //store characters to string
-                  serverReadString += c;
+                  globalBuffer[x] = c;
               }
               
               if (c == '\n' && currentLineIsBlank)
@@ -211,15 +214,24 @@ void ETHERNET_HTTP::listen(void)
                   incomingclient.println(F("<H2>Buzz's simple Override button:</H2>"));
                   
                   ///////////////////// control arduino pin
-                  if(serverReadString.indexOf("open") >0)//checks for on
+                  for(x=0; x< GLOBAL_BUFFER_LEN; x++)
                   {
-                      DOOR.open();
-                      Serial.println(F("Door open"));
+                    if( globalBuffer[x] == 'o' || globalBuffer[x] == 'c' )
+                    {
+                       break; 
+                    }
                   }
-                  if(serverReadString.indexOf("close") >0)//checks for off
+                  //Serial.println(x);
+                  //Serial.println(globalBuffer);
+                  if(x > 4 && globalBuffer[x] == 'c' && globalBuffer[x+1] == 'l')//checks for off
                   {
                       DOOR.lock();
                       Serial.println(F("Door close"));
+                  }
+                  else if(x > 4 && globalBuffer[x] == 'o' && globalBuffer[x+1] == 'p')//checks for on
+                  {
+                      DOOR.open();
+                      Serial.println(F("Door open"));
                   }
                   
                   // report to user revised state of pin!
@@ -256,8 +268,6 @@ void ETHERNET_HTTP::listen(void)
         delay(1);
         // close the connection:
         incomingclient.stop();
-        //clearing string for next read
-        serverReadString="";
     }
 } // END WEB SERVER/LISTNER CODE:
 
@@ -272,9 +282,7 @@ void ETHERNET_WIZNET_CHECKER::init(void)
     // if we've still not had a sucessful http request in hte last 60 seconds, then reset the wiznet module, wait 60 secs and try again.
 
 void ETHERNET_WIZNET_CHECKER::listen(void)
-{
-  
-  //XXXX
+{  
       if (millis() - lastConnectionTime > (long)(pollingInterval*1000) ) {
          Serial.println(F("network poll checking now.... "));
 

@@ -63,7 +63,7 @@ struct DeviceInfo {
   IPAddress     server;    // IP address of the authentication server
   byte          mac[6];    // Mac address of this device
   char          deviceName[MEMORY_DEVICE_NAME_MAX_LENGTH]; // Name/Location of this device
-  unsigned int  id;        // Device unique id
+  unsigned long int id;        // Device unique id can not exceed 65,536
 };
 
 struct RFID_info {

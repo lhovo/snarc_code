@@ -276,27 +276,28 @@ void SERIAL_MENU::display(void)
 void SERIAL_MENU::prompt(void)
 {
     Serial.println(F("\nPROGRAM MODE:"));
-    Serial.println(F("r - print card list"));
-    Serial.println(F("k - program new key to MEMORY"));
-    Serial.println(F("z - expire a single card from MEMORY"));
-    Serial.println(F("u - Ask server to give us a card update"));
+    Serial.println(F("For Command List goto: https://github.com/HSBNE/snarc_code"));
+//    Serial.println(F("r - print card list"));
+//    Serial.println(F("k - program new key to MEMORY"));
+//    Serial.println(F("z - expire a single card from MEMORY"));
+//    Serial.println(F("u - Ask server to give us a card update"));
 //    Serial.println(F("w - write card list to MEMORY"));
-    Serial.println(F("i - wipe and initialise EEPROM (dangerous!) \n"));
-    
-    Serial.println(F("-- Options below need to be saved after change --"));
-    Serial.println(F("d - set device name"));
-    Serial.println(F("t - set device identification"));
-    Serial.println(F("m - set MAC address"));
-    Serial.println(F("b - set IP address"));
-    Serial.println(F("g - set gateway address"));
-    Serial.println(F("n - set subnet address"));
-    //Serial.println(F("e - set DNS address")); // -- Not supported yet -- //
-    Serial.println(F("a - set server address"));
-    Serial.println(F("s - save changes"));
-    Serial.println(F("p - print node config"));
-    Serial.println(F("e - print loaded ethernet settings\n"));
-    
-    Serial.println(F("x - exit programming mode"));
+//    Serial.println(F("i - wipe and initialise EEPROM (dangerous!) \n"));
+//    
+//    Serial.println(F("-- Options below need to be saved after change --"));
+//    Serial.println(F("d - set device name"));
+//    Serial.println(F("t - set device identification"));
+//    Serial.println(F("m - set MAC address"));
+//    Serial.println(F("b - set IP address"));
+//    Serial.println(F("g - set gateway address"));
+//    Serial.println(F("n - set subnet address"));
+//    //Serial.println(F("e - set DNS address")); // -- Not supported yet -- //
+//    Serial.println(F("a - set server address"));
+//    Serial.println(F("s - save changes"));
+//    Serial.println(F("p - print node config"));
+//    Serial.println(F("e - print loaded ethernet settings\n"));
+//    
+//    Serial.println(F("x - exit programming mode"));
 }
 
 void SERIAL_MENU::print_node_config(DeviceInfo *settings)
@@ -440,7 +441,7 @@ void SERIAL_MENU::listen_for_device_name(char *deviceName)
     }
 }
 
-void SERIAL_MENU::listen_for_device_id(unsigned int *deviceId)
+void SERIAL_MENU::listen_for_device_id(unsigned long int *deviceId)
 {
     boolean keepReading = true;
     int     serial_recieve_index = 0;
@@ -481,7 +482,7 @@ void SERIAL_MENU::listen_for_device_id(unsigned int *deviceId)
     else
     {
         deviceChar[serial_recieve_index] = '\0';
-        sscanf(deviceChar, "%d", deviceId);
+        sscanf(deviceChar, "%lu", deviceId);
         changesMade = true;
         
         Serial.print(F("Device ID set to: "));

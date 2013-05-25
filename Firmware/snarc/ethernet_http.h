@@ -38,7 +38,7 @@ class ETHERNET_HTTP
         void init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server);
         void wiznet_reset(); // reset the hardware wiznet module 
         void print_settings(void);
-        int  check_tag(unsigned long *tag, unsigned int *door);
+        int  check_tag(unsigned long *tag, unsigned long int *door);
         void listen(void);
     private:
 };

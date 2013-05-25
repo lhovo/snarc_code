@@ -37,7 +37,7 @@ void setup()
     unsigned int leds_init[] = LED_PINS;
     
     MENU.init(19200); // Set the TX/RX pins to 19200
-   // LEDS.init(leds_init, LED_DEFINED);
+    LEDS.init(leds_init, LED_DEFINED);
     RFID.init();
     MEMORY.init();
     MEMORY.getNetworkInfo(&mySettings);
@@ -48,8 +48,7 @@ void setup()
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     NETWORKCHECKER.init();
     DOOR.init();
-    //DOOR.unlockDoor(2000); // open door for 2 seconds as a TEST
-    attachInterrupt(INT_USER, userInterupt, CHANGE);
+    attachInterrupt(INT_USER, userInterupt, HIGH);
 }
 
 void loop()
@@ -95,7 +94,8 @@ void userInterupt()
 {
 #ifdef ENABLE_ESTOP_AS_SAFETY_DEVICE
   DOOR.lock();
-#elseif defined ENABLE_ESTOP_AS_EGRESS_BUTTON
+#endif
+#ifdef ENABLE_ESTOP_AS_EGRESS_BUTTON
   DOOR.unlockDoor(2000); // open door for 2 seconds
 #endif
 }
