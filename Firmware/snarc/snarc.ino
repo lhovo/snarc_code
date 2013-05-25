@@ -45,7 +45,7 @@ void setup()
     Serial.println(mySettings.id);
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     DOOR.init();
-    DOOR.unlockDoor(2000); // open door for 2 seconds
+    //DOOR.unlockDoor(2000); // open door for 2 seconds as a TEST
     attachInterrupt(INT_USER, userInterupt, CHANGE);
 }
 
