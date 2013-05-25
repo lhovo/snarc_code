@@ -136,17 +136,16 @@ void SERIAL_MENU::display(void)
                     break;
                 
                 //  w means "write" hard-coded LIST ( from to EEPROM cache - undocumented command for initial population of eeprom
-                case: 'w':    
+                case 'w':    
                     Serial.println(F("please wait, writing new codes list...."));
-                    
-                    
-                    // write_codes_to_eeprom(); TODO implement this from buzzs code. 
+
+                    //write_codes_to_eeprom(); // TODO
                     Serial.print(F("address:"));
-                    Serial.println(last_address);
+                    //Serial.println(last_address);
                     prompt();
                 break;
                 
-                // Expire a single card, typed or scanned
+                // Expire a card, typed or scanned
                 case 'z':
                     Serial.println(F("Scan card now, or type ID"));
                     
@@ -194,7 +193,7 @@ void SERIAL_MENU::display(void)
                     break;
                 
                 // Set Ip Address
-                case 'i':
+                case 'b':
                     tempIP = mySettings.ip;
                     listen_for_ipaddress(&tempIP);
                     mySettings.ip = tempIP;
@@ -277,17 +276,18 @@ void SERIAL_MENU::display(void)
 void SERIAL_MENU::prompt(void)
 {
     Serial.println(F("\nPROGRAM MODE:"));
-    Serial.println(F("c - print card list"));
-    Serial.println(F("k - program new key to EEPROM"));
-    Serial.println(F("z - expire a single card from EEPROM"));
+    Serial.println(F("r - print card list"));
+    Serial.println(F("k - program new key to MEMORY"));
+    Serial.println(F("z - expire a single card from MEMORY"));
     Serial.println(F("u - Ask server to give us a card update"));
-    Serial.println(F("w - wipe and initialise EEPROM (dangerous!) \n"));
+//    Serial.println(F("w - write card list to MEMORY"));
+    Serial.println(F("i - wipe and initialise EEPROM (dangerous!) \n"));
     
     Serial.println(F("-- Options below need to be saved after change --"));
     Serial.println(F("d - set device name"));
     Serial.println(F("t - set device identification"));
     Serial.println(F("m - set MAC address"));
-    Serial.println(F("i - set IP address"));
+    Serial.println(F("b - set IP address"));
     Serial.println(F("g - set gateway address"));
     Serial.println(F("n - set subnet address"));
     //Serial.println(F("e - set DNS address")); // -- Not supported yet -- //

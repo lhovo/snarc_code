@@ -14,17 +14,18 @@
 // flash library ( external chip) not implemented
 // socket library
 // ntp
-// wiznet hardware reset  ( take it from here:  https://github.com/davidbuzz/snarc/commit/f9e2aebe93cdc947fb6ceb957dfbb667a1da71f0 ) 
 // time library not fully tested ( for onboard card expiry ) 
+// wiznet hardware reset  ( take it from here:  https://github.com/davidbuzz/snarc/commit/f9e2aebe93cdc947fb6ceb957dfbb667a1da71f0 ) 
 // estop ( user interrupt )  
 // http web interface ( crashes sometimes ) 
-// watchdog reset 
+// watchdog reset
 // password on web interface
 // random mac address -on-the-fly- initialisation 
 // "get current full list from server" menu option not implemented yet
 // push full list of auth data from server ( to http interface ) 
 // key revocation is tested and works ( by setting timestamp to zero ) 
 // make the hardware "zero configuration" with DHCP and some sort of registration process.
+// Piezo Micro cluster
 
 
 DeviceInfo mySettings;
@@ -92,7 +93,11 @@ void loop()
 
 void userInterupt()
 {
-  
+#ifdef ENABLE_ESTOP_AS_SAFETY_DEVICE
+  DOOR.lock();
+#elseif defined ENABLE_ESTOP_AS_EGRESS_BUTTON
+  DOOR.unlockDoor(2000); // open door for 2 seconds
+#endif
 }
 
 /*
