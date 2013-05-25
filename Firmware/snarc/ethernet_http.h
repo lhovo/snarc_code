@@ -36,12 +36,27 @@ class ETHERNET_HTTP
     
     public:
         void init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server);
+        void wiznet_reset(); // reset the hardware wiznet module 
         void print_settings(void);
         int check_tag(unsigned long *tag, unsigned int *door);
         void listen(void);
     private:
 };
 
+class ETHERNET_WIZNET_CHECKER
+{
+    //IPAddress serverIP;
+    
+    public:
+        void init(void);
+        void listen(void);
+    private:
+     void wiznet_reset(); // reset the hardware wiznet module 
+};
+
+
 extern ETHERNET_HTTP ethernetHttp;
+
+extern ETHERNET_WIZNET_CHECKER ethernetWiznetChecker;
 
 #endif /* __ETHERNET_HTTP_H__ */

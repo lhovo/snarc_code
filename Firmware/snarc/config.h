@@ -69,6 +69,13 @@ struct RFID_info {
     time_t         expiration;
 };
 
+extern unsigned long rfidTag;
+extern DeviceInfo mySettings;
+
+const unsigned long pollingInterval = 60;  // maximum time between network checks, in seconds
+unsigned long lastConnectionTime = 0;          // last time you connected to the server, in milliseconds
+
+
 // --- Include the interactive serial menu ---
 #include "serial_menu.h"
 #define MENU SNARC_SERIAL_MENU
@@ -109,6 +116,7 @@ struct RFID_info {
     #define DOOR_PIN            5
     #define ETHERNET_CS         10
     #define ETHERNET_RESET_PIN  8
+    #define WIZRESET ETHERNET_RESET_PIN // alternate name for same pin
     
     #define LED_PIN_RED    17
     #define LED_PIN_YELLOW 18

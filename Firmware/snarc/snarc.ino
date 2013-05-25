@@ -3,6 +3,7 @@
 #include <SoftwareSerial.h>
 #include <SPI.h>
 #include <EEPROM.h>
+
 #include <Time.h>
 /*
  *   Simple NetworkAble RFID Controller firmware, for SNARC, SNARC+ and Arduino+Ethernet comptible hardware.
@@ -44,6 +45,7 @@ void setup()
     Serial.print(" id:");
     Serial.println(mySettings.id);
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
+    NETWORKCHECKER.init();
     DOOR.init();
     //DOOR.unlockDoor(2000); // open door for 2 seconds as a TEST
     attachInterrupt(INT_USER, userInterupt, CHANGE);
@@ -61,16 +63,16 @@ void loop()
         Serial.println(rfidTag);
         LEDS.off(LEDS_YELLOW);
         
-        if(MEMORY.accessAllowed(&rfidTag))
+        if(MEMORY.accessAllowed(&rfidTag)) // is tag in local EEPROM? 
         {
             LEDS.on(LEDS_GREEN);
-            DOOR.unlockDoor(2000, &rfidTag, &mySettings.id); // open door for 2 seconds
+            DOOR.unlockDoor(2000, &rfidTag, &mySettings.id); // open door for 2 seconds and log to HTTP remote
             LEDS.off(LEDS_GREEN);
         }
-        else if (ETHERNET.check_tag(&rfidTag, &mySettings.id) > 0)
+        else if (ETHERNET.check_tag(&rfidTag, &mySettings.id) > 0) // unknown key, check what remote server has to say ( server logs it) ? 
         {    
              LEDS.on(LEDS_GREEN | LEDS_RED);
-             DOOR.unlockDoor(2000); // open door for 2 seconds
+             DOOR.unlockDoor(2000); // open door for 2 seconds , no logging
              
              // Record Card for next time
              RFID_info newCard = {rfidTag, now()+SECS_PER_WEEK};
@@ -82,7 +84,10 @@ void loop()
             LEDS.blink(LEDS_RED);
         }
     }
-    ETHERNET.listen();
+    ETHERNET.listen();   // local http server handler.
+    
+    NETWORKCHECKER.listen();
+    
 }
 
 void userInterupt()

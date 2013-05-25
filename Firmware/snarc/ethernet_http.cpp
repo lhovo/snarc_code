@@ -48,6 +48,8 @@ void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress s
     localserver.begin();
 }
 
+
+
 void ETHERNET_HTTP::print_settings(void)
 {
     byte macAdd[6];
@@ -66,7 +68,7 @@ void ETHERNET_HTTP::print_settings(void)
     Serial.print(F("DNS:      "));
     Serial.println(Ethernet.dnsServerIP());
 
-    Ethernet.macAddress(macAdd);
+   // Ethernet.macAddress(macAdd);
     Serial.print(F("Mac:      "));
     Serial.print(macAdd[0],16);
     Serial.print(F(":"));
@@ -253,6 +255,59 @@ void ETHERNET_HTTP::listen(void)
         serverReadString="";
     }
 } // END WEB SERVER/LISTNER CODE:
+
+
+void ETHERNET_WIZNET_CHECKER::init(void)
+{
+}
+
+    // If we've not had a successful http request in the last 60 seconds, then try to make one
+    // if we've still not had a sucessful http request in hte last 60 seconds, then reset the wiznet module, wait 60 secs and try again.
+
+void ETHERNET_WIZNET_CHECKER::listen(void)
+{
+  
+  //XXXX
+      if (millis() - lastConnectionTime > (long)(pollingInterval*1000) ) {
+         Serial.println(F("network poll checking now.... "));
+
+         // do the poll/check with a dummy key, for now.
+       int serveraccess = -1; //
+       // serveraccess = send_to_server2("1234567890", 0); //log successes/failures/
+       serveraccess = ETHERNET.check_tag(&rfidTag, &mySettings.id);
+       
+        //etc, and return the permissions the server has.
+        if ( serveraccess == -1 ) {
+          Serial.println(F("network appears offline, forcing wiznet reset "));
+          lastConnectionTime = millis(); // to make this code block not run again for at least 60 seconds, which is enough time ot bring wiznet online.
+          wiznet_reset();
+          delay(200);
+          // re-init wiznet stackand whatnot.
+              ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
+
+         // Ethernet.begin(mac, ip, gateway, subnet);
+         // localserver.begin();
+          
+        } else {
+          Serial.println(F("network check appears OK. "));
+        }
+      }
+  
+  
+}
+
+void ETHERNET_WIZNET_CHECKER::wiznet_reset(void)
+{ 
+  //WIZRESET - ~30-48 secs after this, it pings - this is probably overkill, but I'm not sure if it's leading or trailing edge trggered, so I do both
+  pinMode(ETHERNET_RESET_PIN, OUTPUT);
+  digitalWrite(ETHERNET_RESET_PIN, HIGH);
+    delay(50);
+  digitalWrite(ETHERNET_RESET_PIN, LOW);
+    delay(50);
+  digitalWrite(ETHERNET_RESET_PIN, HIGH);
+  delay(200);  
+}
+
 
 
 ETHERNET_HTTP ethernetHttp;

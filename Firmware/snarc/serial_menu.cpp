@@ -140,13 +140,13 @@ void SERIAL_MENU::display(void)
                     Serial.println(F("please wait, writing new codes list...."));
                     
                     
-                    write_codes_to_eeprom();
+                    // write_codes_to_eeprom(); TODO implement this from buzzs code. 
                     Serial.print(F("address:"));
                     Serial.println(last_address);
                     prompt();
                 break;
                 
-                // Expire a card, typed or scanned
+                // Expire a single card, typed or scanned
                 case 'z':
                     Serial.println(F("Scan card now, or type ID"));
                     
