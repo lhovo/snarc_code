@@ -99,14 +99,16 @@ void SERIAL_MENU::display(void)
             {
               
                 // Read current list from EEPROM cache
-                case 'c':
+                //case 'c':  // cards
+                case 'r':  // 'r'ead cards
                     Serial.println(F("Card list.."));
                     MEMORY.printAccessList();
                     break;
                                    
                 // Write new code to MEMORY
                 // the next key scanned will be saved
-                case 'k':
+                //case 'k':
+                case 'n': // add 'new' card:
                     Serial.println(F("Scan new card now"));
                     
                     // Wait for card to be read
@@ -127,11 +129,22 @@ void SERIAL_MENU::display(void)
                     }
                     break;
                 
-                // Wipe all MEMORY
-                case 'w':
+                // Erase/Initialise all MEMORY
+                case 'i':
                     MEMORY.erase();
                     Serial.println(F("Memory Erase complete.."));
                     break;
+                
+                //  w means "write" hard-coded LIST ( from to EEPROM cache - undocumented command for initial population of eeprom
+                case: 'w':    
+                    Serial.println(F("please wait, writing new codes list...."));
+                    
+                    
+                    write_codes_to_eeprom();
+                    Serial.print(F("address:"));
+                    Serial.println(last_address);
+                    prompt();
+                break;
                 
                 // Expire a card, typed or scanned
                 case 'z':
@@ -195,7 +208,7 @@ void SERIAL_MENU::display(void)
                     break;
 
                 // Set Subnet Address
-                case 'n':
+                case 'k':
                     tempIP = mySettings.subnet;
                     listen_for_ipaddress(&tempIP);
                     mySettings.subnet = tempIP;
