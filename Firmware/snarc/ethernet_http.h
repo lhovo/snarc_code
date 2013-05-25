@@ -52,6 +52,7 @@ class ETHERNET_WIZNET_CHECKER
     public:
         void init(void);
         void listen(void);
+        void last_connection_time(); 
     private:
      void wiznet_reset(); // reset the hardware wiznet module 
 };

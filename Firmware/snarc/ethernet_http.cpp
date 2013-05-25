@@ -103,7 +103,7 @@ int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned int *door)
       client.println();
       
             // note the time that the connection was made:
-      lastConnectionTime = millis();
+     ethernetWiznetChecker.last_connection_time();
 
     }
     else
@@ -314,6 +314,10 @@ void ETHERNET_WIZNET_CHECKER::wiznet_reset(void)
   digitalWrite(ETHERNET_RESET_PIN, HIGH);
   delay(200);  
 }
+
+void ETHERNET_WIZNET_CHECKER::last_connection_time() { 
+   lastConnectionTime = millis();
+} 
 
 ETHERNET_WIZNET_CHECKER ethernetWiznetChecker;
 
