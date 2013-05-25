@@ -39,8 +39,8 @@ EthernetServer localserver(80);
 void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server)
 {
 #ifdef ETHERNET_RESET_PIN
-    pinMode(ETHERNET_RESET_PIN, OUTPUT);
     digitalWrite(ETHERNET_RESET_PIN, HIGH);
+    pinMode(ETHERNET_RESET_PIN, OUTPUT);
 #endif
     delay(1000);   // delay boot by precautionary 1sec 
     Ethernet.begin(mac,ip,gateway,subnet, ETHERNET_CS);    
