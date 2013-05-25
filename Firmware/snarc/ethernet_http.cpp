@@ -102,9 +102,8 @@ int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned long int *door)
       client.println(*door);
       client.println();
       
-            // note the time that the connection was made:
-     ethernetWiznetChecker.last_connection_time();
-
+      // note the time that the connection was made:
+      ethernetWiznetChecker.last_connection_time();
     }
     else
     {
@@ -145,6 +144,7 @@ int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned long int *door)
     // if the server's disconnected, stop the client:
     Serial.print(F("http data:"));
     // recieved data is now in the string: client_recieve_data
+    globalBuffer[x] = '\0';
     Serial.println(globalBuffer);
     
     // we expect the permissions string to look like 'access:1' ( for permit ), or 'access:0' (for deny )    
@@ -289,6 +289,7 @@ void ETHERNET_WIZNET_CHECKER::listen(void)
          // do the poll/check with a dummy key, for now.
        int serveraccess = -1; //
        // serveraccess = send_to_server2("1234567890", 0); //log successes/failures/
+       rfidTag = 1234567890;
        serveraccess = ETHERNET.check_tag(&rfidTag, &mySettings.id);
        
         //etc, and return the permissions the server has.
