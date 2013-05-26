@@ -36,6 +36,7 @@
  
 void DOOR_ACTUATOR::init(void)
 {
+    doortimer = 0;
     pinMode(DOOR_PIN, OUTPUT);
     lock();
 }
@@ -58,15 +59,18 @@ void DOOR_ACTUATOR::lock(void)
 #endif
 }
 
-void DOOR_ACTUATOR::unlockDoor(int timeMs)
+void DOOR_ACTUATOR::unlockDoor(unsigned long int timeMs)
 {
    unlockDoor(timeMs, 0, 0);
 }
 
-void DOOR_ACTUATOR::unlockDoor(int timeMs, unsigned long *card_no, unsigned long int *deviceID)
+void DOOR_ACTUATOR::unlockDoor(unsigned long int timeMs, unsigned long *card_no, unsigned long int *deviceID)
 {
     // Open the door
     open();
+    
+    doordelay = millis();
+    doortimer = timeMs;
     
     if( card_no > 0 )
     {
@@ -75,11 +79,15 @@ void DOOR_ACTUATOR::unlockDoor(int timeMs, unsigned long *card_no, unsigned long
            MEMORY.expireAccess(card_no);
         }     
     }
+}
 
-    delay(timeMs); 
-    
-    // Lock the door again
-    lock();
+void DOOR_ACTUATOR::locktimeout(void)
+{
+    if(doortimer != 0 && (millis() > (doordelay + doortimer))){
+         // Lock the door again
+         doortimer = 0;
+         lock();
+    }
 }
 
 door_status DOOR_ACTUATOR::status(void)

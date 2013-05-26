@@ -71,7 +71,8 @@ boolean RFID_SEEED_125::read(unsigned long *last_code)
         if(timeout >= RFID_TIMEOUT_COUNT) { return false; }
       }
       // ID completely read
-
+      //Serial.println(globalBuffer);
+      
       // Read from 10 to 12
       globalBuffer[12] = '\0';
       chk         = strtol(globalBuffer+10, NULL, 16);
@@ -84,21 +85,16 @@ boolean RFID_SEEED_125::read(unsigned long *last_code)
       //Serial.println(*last_code);
       //Serial.println(chk);
       
-      // Checksum code broken for now
-      return true;
-    
-      int checksum = 0;
       // Do checksum calculation
+      int checksum = 0;
       for(int i = 0; i < 5; i++) {
         globalBuffer[10] = globalBuffer[i*2];
-        globalBuffer[11] = globalBuffer[i*2+2];
+        globalBuffer[11] = globalBuffer[i*2+1];
         checksum ^= strtol(globalBuffer+10, NULL, 16); //hex2dec(str_id.substring(i*2,(i*2)+2));
       }
-      Serial.println(checksum);
+      
       if (checksum == chk)
       {
-        //Serial.print("Recived ");
-        //Serial.println(*last_code);
         return true;
       }
 //      else

@@ -87,6 +87,7 @@ void loop()
     ETHERNET.listen();   // local http server handler.
     
     NETWORKCHECKER.listen();
+    DOOR.locktimeout();
     
 }
 
@@ -99,35 +100,3 @@ void userInterupt()
   DOOR.unlockDoor(2000); // open door for 2 seconds
 #endif
 }
-
-/*
-void led_test()
-{
-    int i, j;
-    int led[4] = {LEDS_RED, LEDS_YELLOW, LEDS_GREEN, LEDS_ALL};
-    
-    for(j=0;j<4;j++)
-    {
-      for(i=0;i<=255;i+=3)
-      {
-        LEDS.pwm(led[j], i);
-        delay(30);
-      }
-      for(i=255;i>=0;i-=3)
-      {
-        LEDS.pwm(led[j], i);
-        delay(30);
-      }
-    }
-    
-    LEDS.blink(LEDS_RED);
-    delay(400);
-    LEDS.blink(LEDS_YELLOW);
-    delay(400);
-    LEDS.blink(LEDS_GREEN);
-    delay(400);
-    LEDS.blink(LEDS_ALL);
-    delay(1000);
-    LEDS.off(LEDS_ALL);
-}
-*/

@@ -36,10 +36,13 @@ class DOOR_ACTUATOR
         void          lock(void);
         door_status   status(void);
         // Open door for timeMs milliseconds
-        void          unlockDoor(int timeMs);
-        void          unlockDoor(int timeMs, unsigned long *card_no, unsigned long int *deviceID);
+        void          unlockDoor(unsigned long int timeMs);
+        void          unlockDoor(unsigned long int timeMs, unsigned long *card_no, unsigned long int *deviceID);
+        void          locktimeout(void);
         
     private:
+        unsigned long doordelay;
+        unsigned long doortimer;
 };
 
 extern DOOR_ACTUATOR DOOR;
