@@ -61,10 +61,10 @@ void DOOR_ACTUATOR::lock(void)
 
 void DOOR_ACTUATOR::unlockDoor(unsigned long int timeMs)
 {
-   unlockDoor(timeMs, 0, 0);
+   unlockDoor(timeMs, NULL, NULL, NULL);
 }
 
-void DOOR_ACTUATOR::unlockDoor(unsigned long int timeMs, unsigned long *card_no, unsigned long int *deviceID)
+void DOOR_ACTUATOR::unlockDoor(unsigned long int timeMs, unsigned long *card_no, unsigned long int *deviceID, char *name)
 {
     // Open the door
     open();
@@ -74,7 +74,7 @@ void DOOR_ACTUATOR::unlockDoor(unsigned long int timeMs, unsigned long *card_no,
     
     if( card_no > 0 )
     {
-        if(ETHERNET.check_tag(card_no, deviceID) == 0)
+        if(ETHERNET.check_tag(card_no, deviceID, name) == 0)
         {
            MEMORY.expireAccess(card_no);
         }     

@@ -66,10 +66,10 @@ void loop()
         if(MEMORY.accessAllowed(&rfidTag)) // is tag in local EEPROM? 
         {
             LEDS.on(LEDS_GREEN);
-            DOOR.unlockDoor(2000, &rfidTag, &mySettings.id); // open door for 2 seconds and log to HTTP remote
+            DOOR.unlockDoor(2000, &rfidTag, &mySettings.id, mySettings.deviceName); // open door for 2 seconds and log to HTTP remote
             LEDS.off(LEDS_GREEN);
         }
-        else if (ETHERNET.check_tag(&rfidTag, &mySettings.id) > 0) // unknown key, check what remote server has to say ( server logs it) ? 
+        else if (ETHERNET.check_tag(&rfidTag, &mySettings.id, mySettings.deviceName) > 0) // unknown key, check what remote server has to say ( server logs it) ? 
         {    
              LEDS.on(LEDS_GREEN | LEDS_RED);
              DOOR.unlockDoor(2000); // open door for 2 seconds , no logging

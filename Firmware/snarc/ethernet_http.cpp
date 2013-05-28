@@ -88,7 +88,7 @@ void ETHERNET_HTTP::print_settings(void)
     Serial.println(F("----------------------------------------------"));   
 }
 
-int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned long int *door)
+int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned long int *door, char *name)
 {
    EthernetClient client;
    int client_recieve_pointer = 0, x = 0;
@@ -99,7 +99,9 @@ int ETHERNET_HTTP::check_tag(unsigned long *tag, unsigned long int *door)
       client.print("GET /logger.php?secret=asecret&q=");
       client.print(*tag);
       client.print("&d=");
-      client.println(*door);
+      client.print(*door);
+      client.print("&n=");
+      client.println(*name);
       client.println();
       
       // note the time that the connection was made:
@@ -175,6 +177,7 @@ void ETHERNET_HTTP::listen(void)
   // listen for incoming clients
   EthernetClient incomingclient = localserver.available();
   int x = 0;
+  int get_post = 0; // not_found = 0, get = 1, post = 2
   
   if (incomingclient)
   {
@@ -190,13 +193,13 @@ void ETHERNET_HTTP::listen(void)
               // character) and the line is blank, the http request has ended,
               // so you can send a reply
               
-              //read char by char HTTP request into 100 byte buffer, toss rest away!
+              //read char by char HTTP request into buffer, toss rest away!
               if (x++ < GLOBAL_BUFFER_LEN)
               {
                   //store characters to string
                   globalBuffer[x] = c;
               }
-              
+              Serial.println(globalBuffer);
               if (c == '\n' && currentLineIsBlank)
               {
                   // send a standard http response header
@@ -290,7 +293,7 @@ void ETHERNET_WIZNET_CHECKER::listen(void)
        int serveraccess = -1; //
        // serveraccess = send_to_server2("1234567890", 0); //log successes/failures/
        rfidTag = 1234567890;
-       serveraccess = ETHERNET.check_tag(&rfidTag, &mySettings.id);
+       serveraccess = ETHERNET.check_tag(&rfidTag, &mySettings.id, mySettings.deviceName);
        
         //etc, and return the permissions the server has.
         if ( serveraccess == -1 ) {

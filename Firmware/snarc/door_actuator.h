@@ -37,7 +37,7 @@ class DOOR_ACTUATOR
         door_status   status(void);
         // Open door for timeMs milliseconds
         void          unlockDoor(unsigned long int timeMs);
-        void          unlockDoor(unsigned long int timeMs, unsigned long *card_no, unsigned long int *deviceID);
+        void          unlockDoor(unsigned long int timeMs, unsigned long *card_no, unsigned long int *deviceID, char *name);
         void          locktimeout(void);
         
     private:
