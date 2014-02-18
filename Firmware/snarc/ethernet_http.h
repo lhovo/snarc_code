@@ -36,7 +36,6 @@ class ETHERNET_HTTP
     
     public:
         void init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server);
-        void wiznet_reset(); // reset the hardware wiznet module 
         void print_settings(void);
         int  check_tag(unsigned long *tag, unsigned long int *door, char *name);
         void listen(void);
@@ -45,9 +44,8 @@ class ETHERNET_HTTP
 
 class ETHERNET_WIZNET_CHECKER
 {
-    //IPAddress serverIP;
-    unsigned long pollingInterval;// = 60;  // maximum time between network checks, in seconds
-    unsigned long lastConnectionTime;// = 0;          // last time you connected to the server, in milliseconds
+    unsigned long pollingInterval;        // maximum time between network checks, in seconds
+    unsigned long lastConnectionTime;     // last time you connected to the server, in milliseconds
 
     public:
         void init(void);

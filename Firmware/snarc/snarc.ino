@@ -16,7 +16,6 @@
 // ntp
 // time library not fully tested ( for onboard card expiry ) 
 // wiznet hardware reset  ( take it from here:  https://github.com/davidbuzz/snarc/commit/f9e2aebe93cdc947fb6ceb957dfbb667a1da71f0 ) 
-// estop ( user interrupt )  
 // http web interface ( crashes sometimes ) 
 // watchdog reset
 // password on web interface

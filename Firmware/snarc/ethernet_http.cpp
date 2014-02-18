@@ -68,7 +68,7 @@ void ETHERNET_HTTP::print_settings(void)
     Serial.print(F("DNS:      "));
     Serial.println(Ethernet.dnsServerIP());
 
-   // Ethernet.macAddress(macAdd);
+    Ethernet.macAddress(macAdd);
     Serial.print(F("Mac:      "));
     Serial.print(macAdd[0],16);
     Serial.print(F(":"));
@@ -317,14 +317,13 @@ void ETHERNET_WIZNET_CHECKER::listen(void)
 
 void ETHERNET_WIZNET_CHECKER::wiznet_reset(void)
 { 
+#ifdef ETHERNET_RESET_PIN
   //WIZRESET - ~30-48 secs after this, it pings - this is probably overkill, but I'm not sure if it's leading or trailing edge trggered, so I do both
-  pinMode(ETHERNET_RESET_PIN, OUTPUT);
-  digitalWrite(ETHERNET_RESET_PIN, HIGH);
-    delay(50);
   digitalWrite(ETHERNET_RESET_PIN, LOW);
-    delay(50);
+  delay(50);
   digitalWrite(ETHERNET_RESET_PIN, HIGH);
   delay(200);  
+#endif
 }
 
 void ETHERNET_WIZNET_CHECKER::last_connection_time() { 

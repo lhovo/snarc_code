@@ -20,8 +20,8 @@
 #define __CONFIGURE_H__
 
 // ------ Define Board ------
-#define SNARC_PLUS
-//#define SNARC
+//#define SNARC_PLUS
+#define SNARC
 
 // ------ Set RFID Input ------
 #define RFID_125MHZ_SOFTSERIAL
@@ -38,8 +38,8 @@
 #define ENABLE_ESTOP_AS_EGRESS_BUTTON
 
 // ------ Ethernet Protocol ------
-#define USE_ETHERNET_HTTP
-//#define USE_ETHERNET_SOCKET
+//#define USE_ETHERNET_HTTP
+#define USE_ETHERNET_SOCKET
 //#define USE_ETHERNET_HTTP_SERVER
 
 /* -------------------------------------
@@ -118,6 +118,9 @@ extern DeviceInfo mySettings;
     #define ETHERNET_RESET_PIN  8
     #define WIZRESET ETHERNET_RESET_PIN // alternate name for same pin
     
+    #define INT_ETHERNET       0
+    #define INT_USER           1
+    
     #define LED_PIN_RED    17
     #define LED_PIN_YELLOW 18
     #define LED_PIN_GREEN  19
@@ -160,6 +163,7 @@ extern DeviceInfo mySettings;
 #elif defined USE_ETHERNET_SOCKET
     #include "ethernet_socket.h"
     #define ETHERNET ethernetSocket
+    #define NETWORKCHECKER ethernetSocketChecker
 //#elif defined USE_ETHERNET_HTTP_SERVER
 
 #else

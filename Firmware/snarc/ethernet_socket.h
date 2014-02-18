@@ -30,11 +30,29 @@ class ETHERNET_SOCKET
     
     public:
         void init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress subnet, IPAddress server);
-        boolean check_connection();
-        int check_tag(long tag, int door);
+        void print_settings(void);
+        int  check_tag(unsigned long *tag, unsigned long int *door, char *name);
+        void listen(void);
+        void pack(byte *ptr, byte *data, int *start, int size);
     private:
 };
 
+class ETHERNET_SOCKET_CHECKER
+{
+    unsigned long lastConnectionTime;       // last time you connected to the server, in milliseconds
+    uint16_t      token;
+    
+    public:
+        void init(void);
+        void listen(void);
+        void last_connection_time();
+    private:
+     void wiznet_reset(); // reset the hardware wiznet module 
+     int getToken();
+     uint16_t calc_CRC(unsigned char *p, uint16_t packetLength);
+};
+
 extern ETHERNET_SOCKET ethernetSocket;
+extern ETHERNET_SOCKET_CHECKER ethernetSocketChecker;
 
 #endif /* __ETHERNET_SOCKET_H__ */

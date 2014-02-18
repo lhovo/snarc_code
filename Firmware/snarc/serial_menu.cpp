@@ -190,6 +190,14 @@ void SERIAL_MENU::display(void)
                     // TODO: Implement IP address change
                     // set MAC address
                     //listen_for_new_mac_address();
+                    mySettings.mac[0] = 0x02;
+                    mySettings.mac[1] = 0x08;
+                    mySettings.mac[2] = 0xDC;
+                    // NIC (Network Interface Controller)
+                    mySettings.mac[3] = 0xEF;
+                    mySettings.mac[4] = 0xFE;
+                    mySettings.mac[5] = 0xED;
+                    changesMade = true;
                     break;
                 
                 // Set Ip Address
@@ -323,7 +331,7 @@ void SERIAL_MENU::print_node_config(DeviceInfo *settings)
     Serial.println((IPAddress) settings->server);
 
     // We know the first Half as it's Static, lets save some code space and just print it :)
-    Serial.print(F("Mac:      02:08:DC"));
+    Serial.print(F("Mac:      02:08:DC:"));
     Serial.print(settings->mac[3],16);
     Serial.print(":");
     Serial.print(settings->mac[4],16);
