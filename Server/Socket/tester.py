@@ -7,6 +7,7 @@ import socket
 import optparse
 import time
 import struct, crc16
+import umsgpack
 
 p = optparse.OptionParser()
 p.add_option('--host', dest='lis_addr', type='str', help='listener host')
@@ -19,7 +20,7 @@ globals().update(opts.__dict__)
 device_name = 'front-door'
 mac_address = "00:23:6c:95:d1:c6"
 version_num = 1
-device_salt = "djhldfsljhfdhjlkfsd"
+device_salt = "sx"
 rfid_cards  = [12344010, 3090264] # Number on cards, with leading zero's removed
 
 s = None
@@ -48,11 +49,11 @@ def checkResponce(expectedReturn, returnedData):
     if returnedData[0] == expectedReturn:
         if returnedData[1] == 'E': 
             print "Error code returned.."
-            print returnedData[:2], struct.unpack('<B', returnedData[2])[0], struct.unpack('<B', returnedData[3])[0], returnedData[4:]
+            print returnedData[:2], ord(returnedData[2]), ord(returnedData[3]), returnedData[4:]
             return False
             
-        print "Response: %s%d"% (returnedData[0], struct.unpack('<B', returnedData[1])[0] )
-        if struct.unpack('<B', returnedData[1])[0] == 1:
+        print "Response: %s%d"% (returnedData[0], ord(returnedData[1]) )
+        if ord(returnedData[1]) == 1:
             return True
         else:
             print "Test Failed.."
@@ -60,7 +61,20 @@ def checkResponce(expectedReturn, returnedData):
         print "Bad Responce:", [returnedData]
     return False
 
-
+def getToken():
+    print "Requesting Token"
+    print ":".join("{0:x}".format(ord(c)) for c in umsgpack.packb(['T']))
+    
+    s.send(umsgpack.packb(['T']))
+    token = umsgpack.unpackb(s.recv(1024))
+    print "Token Recived:",token
+    crc = token.pop()
+    if struct.unpack('<H', crc)[0] == crc16.crc16(''.join(token)):
+        print "Token Valid - CRC passed"
+    else:
+        print "Token INVALID", crc16.crc16(token[1]), struct.unpack('<H', crc)[0]
+    
+    return token[1]
 
 
 
@@ -70,27 +84,22 @@ print "Testing... Hello"
 # ------------ Start Hello Message ------------
 
 # Request a token
-print "Requesting Token"
-s.send('T'+struct.pack('<B', 0))
-token = s.recv(1024)
-print "Token Recived:",[token]
-if struct.unpack('<H', token[3:])[0] == crc16.crc16(token[:3]):
-    print "Token Valid - CRC passed"
-else:
-    print "Token INVALID", crc16.crc16(token[1:3]), struct.unpack('<H', token[3:])[0]
-
+token = getToken()
 
 # Send Hello Message
 device_len = struct.pack('<B', len(device_name))
+#print len(device_name)
 mac_add = ''
 for octet in mac_address.split(":"):
     mac_add += struct.pack('<B', int(octet, 16))
 v_num = struct.pack('<B', version_num)
-send_hello = 'H' + device_len + device_name + mac_add + v_num
-send_hello += struct.pack('<H', crc16.crc16(device_salt + token[1:3] + send_hello))
+send_hello = ['H', device_name, mac_add, v_num]
+send_hello.append(struct.pack('<H', crc16.crc16(''.join(send_hello) + device_salt + token)))
 
-s.send(send_hello)
-hello = s.recv(1024)
+print send_hello
+print ":".join("{0:x}".format(ord(c)) for c in umsgpack.packb(send_hello))
+s.send(umsgpack.packb(send_hello))
+hello = umsgpack.unpackb(s.recv(1024))
 if checkResponce('H', hello):
     print "Hello, PASS"
 else:
@@ -100,13 +109,14 @@ else:
 
 # ------------ Send a Heartbeat ------------
 print "\nTesting... HeartBeat"
-device_len = struct.pack('<B', len(device_name))
 
-send_heartBeat = 'B' + device_len + device_name
-send_heartBeat += struct.pack('<H', crc16.crc16(send_heartBeat))
-s.send(send_heartBeat)
+send_heartBeat = ['B', mac_add]
+print ''.join(send_heartBeat)
+send_heartBeat.append(struct.pack('<H', crc16.crc16(''.join(send_heartBeat))))
+print send_heartBeat
+s.send(umsgpack.packb(send_heartBeat))
 
-heartBeat = s.recv(1024)
+heartBeat = umsgpack.unpackb(s.recv(1024))
 if checkResponce('B', heartBeat):
     print "HeartBeat, PASS"
 else:
@@ -120,14 +130,7 @@ time.sleep(5) # wait 5 seconds
 old_token = token
 
 # Request a token
-print "Requesting Token"
-s.send('T'+struct.pack('<B', 0))
-token = s.recv(1024)
-print "Token Recived:",[token]
-if struct.unpack('<H', token[3:])[0] == crc16.crc16(token[:3]):
-    print "Token Valid - CRC passed"
-else:
-    print "Token INVALID", crc16.crc16(token[1:3]), struct.unpack('<H', token[3:])[0]
+token = getToken()
 
 if old_token != token:
     print "Token has changed!!"
@@ -139,21 +142,25 @@ else:
 device_len = struct.pack('<B', len(device_name))
 
 for card in rfid_cards:
-    send_auth = '@' + device_len + device_name + struct.pack('<L', card)
-    send_auth += struct.pack('<H', crc16.crc16(device_salt + token[1:3] + send_auth))
+    print
+    print "---- Checking for card ", card, "----"
+    send_auth = ['@', mac_add, struct.pack('<L', card)]
+    print device_salt, token
+    send_auth.append(struct.pack('<H', crc16.crc16(''.join(send_auth) + device_salt + token)))
+    print send_auth
+    print ":".join("{0:x}".format(ord(c)) for c in umsgpack.packb(send_auth))
+    s.send(umsgpack.packb(send_auth))
+    auth = umsgpack.unpackb(s.recv(1024))
     
-    s.send(send_auth)
-    auth = s.recv(1024)
-            
-    if struct.unpack('<H', auth[-2:])[0] == crc16.crc16(device_salt + token[1:3] + auth[:-2]):
-        print "Auth - CRC passed"
-    else:
-        print "Auth CRC INVALID", crc16.crc16(device_salt + token[1:3] + auth[:-2]), struct.unpack('<H', auth[-2:])[0]   
-        
     if checkResponce('@', auth):
-        print "Auth, PASS", card
+        print "Auth, PASS"
+        crc = struct.unpack('<H',auth.pop())[0]
+        if crc == crc16.crc16(''.join(auth) + device_salt + token):
+            print "Auth - CRC passed"
+        else:
+            print "Auth CRC INVALID", crc16.crc16(''.join(auth) + device_salt + token), crc
     else:
-        print "Auth, FAIL", card
+        print "Auth, FAIL"
 
 
 s.close()

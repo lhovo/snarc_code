@@ -2,10 +2,10 @@
 # Access Gateway Controller
 # @author: Luke Hovington
 
-import psycopg2
+#import psycopg2
 
 # TODO get device salt and card auth list..
-device_deploy_salt = "djhldfsljhfdhjlkfsd"
+device_deploy_salt = "sx"
 allowed_cards_list = [12344010]
 dob_debug = False
 
@@ -25,20 +25,20 @@ def dob_debugPrint(*x):
     if dob_debug:
         print x
                    
-def dob_get_salt(deviceName):
+def dob_get_salt(deviceMacAddress):
     return device_deploy_salt
 
 # Test to see if the device is in the database and update the info
-def dob_hello_check(deviceName, macAdd, versionNumber):
+def dob_hello_check(deviceName, macAddr, versionNumber):
     dob_debugPrint( "Testing dob Hello...." )
     return True
 
 
-def dob_heartBeat_register(deviceName):
+def dob_heartBeat_register(macAddr):
     dob_debugPrint( "Register heartbeat in dob" )
     return True
     
-def dob_check_user(deviceName, cardId):
+def dob_check_user(macAddr, cardId):
     dob_debugPrint( "checking user.." )
     return cardId in allowed_cards_list
     
