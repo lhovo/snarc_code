@@ -26,7 +26,7 @@
 // Some of the Variables that should be defined in your config/program
 
 #define LED_PIN_RED    5
-#define LED_PIN_YELLOW 6
+#define LED_PIN_BLUE   6
 #define LED_PIN_GREEN  9
 #define LED_PINS       {LED_PIN_RED, LED_PIN_YELLOW, LED_PIN_GREEN}
 #define LED_DEFINED 3
@@ -51,7 +51,7 @@
 class LEDS_GENERIC
 {
     public:
-        void init(unsigned int *pins_init, unsigned int pins_defined);
+        void init();
         
         void on(unsigned int ledv);
         void off(unsigned int ledv);
@@ -62,9 +62,8 @@ class LEDS_GENERIC
     private:
         void show_leds(unsigned int changed, int intensity);
         
-        unsigned int  leds, led_count; 
+        unsigned int  leds; 
         unsigned long ledToggle;
-        unsigned int  pins[8];
 };
 
 extern LEDS_GENERIC generic_leds;

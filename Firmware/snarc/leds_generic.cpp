@@ -25,6 +25,7 @@
 /******************************************************************************
  * Definitions
  ******************************************************************************/
+unsigned int  pins[] = LED_PINS;
 
 /******************************************************************************
  * Constructors
@@ -34,25 +35,32 @@
  * User API
  ******************************************************************************/
 
-void LEDS_GENERIC::init(unsigned int *pins_init, unsigned int pins_defined)
+void LEDS_GENERIC::init()
 {
   unsigned int i;
-  led_count = pins_defined;
-  
-  for(i=0; i<led_count; i++)
+  for(i=0; i<LED_DEFINED; i++)
   {
-    pins[i] = pins_init[i];
-    pinMode(pins[i],    OUTPUT);
+    Serial.println(pins[i]);
+    //pins[i] = pins_init[i];
+    pinMode(pins[i], OUTPUT);
+#ifndef INVERT_LEDS
     digitalWrite(pins[i],    LOW);
+#else
+    digitalWrite(pins[i],    HIGH);
+#endif
   }
-  
+
+#ifndef INVERT_LEDS
   leds = 0;
+#else
+  leds = LEDS_ALL;
+#endif
 }
 
 void LEDS_GENERIC::show_leds(unsigned int changed, int intensity)
 {
   unsigned int i;
-  for(i=0; i<led_count; i++)
+  for(i=0; i<LED_DEFINED; i++)
   {
     /* has this led change? */
     if(changed & 1<<i)
@@ -69,7 +77,11 @@ void LEDS_GENERIC::show_leds(unsigned int changed, int intensity)
   }
 }
 
+#ifndef INVERT_LEDS
 void LEDS_GENERIC::on(unsigned int ledv)
+#else
+void LEDS_GENERIC::off(unsigned int ledv)
+#endif
 {
   unsigned int changed;
   changed = (~leds) & ledv;
@@ -77,7 +89,11 @@ void LEDS_GENERIC::on(unsigned int ledv)
   show_leds(changed, 0xff);
 }
 
+#ifndef INVERT_LEDS
 void LEDS_GENERIC::off(unsigned int ledv)
+#else
+void LEDS_GENERIC::on(unsigned int ledv)
+#endif
 {
   unsigned int changed;
   changed = leds & ledv;

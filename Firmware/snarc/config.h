@@ -20,8 +20,8 @@
 #define __CONFIGURE_H__
 
 // ------ Define Board ------
-//#define SNARC_PLUS
-#define SNARC
+#define SNARC_PLUS
+//#define SNARC
 
 // ------ Set RFID Input ------
 #define RFID_125MHZ_SOFTSERIAL
@@ -38,8 +38,8 @@
 #define ENABLE_ESTOP_AS_EGRESS_BUTTON
 
 // ------ Ethernet Protocol ------
-//#define USE_ETHERNET_HTTP
-#define USE_ETHERNET_SOCKET
+#define USE_ETHERNET_HTTP
+//#define USE_ETHERNET_SOCKET
 //#define USE_ETHERNET_HTTP_SERVER
 
 /* -------------------------------------
@@ -83,9 +83,10 @@ extern DeviceInfo mySettings;
 // --- Setup LED Defines ---
 // Though you may have less colours define them anyway
 #define LEDS_RED    1<<0
-#define LEDS_YELLOW 1<<1
+#define LEDS_BLUE   1<<1
 #define LEDS_GREEN  1<<2
-#define LEDS_ALL    (LEDS_RED | LEDS_YELLOW | LEDS_GREEN)
+#define LEDS_WHITE  1<<3
+#define LEDS_ALL    (LEDS_RED | LEDS_BLUE | LEDS_GREEN | LEDS_WHITE)
 
 // --- SNARC_PLUS Board Config ---
 #ifdef SNARC_PLUS
@@ -96,17 +97,23 @@ extern DeviceInfo mySettings;
     #define DOOR_PIN           8
     #define ETHERNET_CS        4
     #define ETHERNET_RESET_PIN 7
-    #define AT45DB_CS          17
 
     #define INT_ETHERNET       0
     #define INT_USER           1
 
-    #define LED_PIN_RED    5
-    #define LED_PIN_YELLOW 6
-    #define LED_PIN_GREEN  9
+    #define LED_PIN_RED    10
+    #define LED_PIN_BLUE   9
+    #define LED_PIN_GREEN  6
     
-    #define LED_PINS    {LED_PIN_RED, LED_PIN_YELLOW, LED_PIN_GREEN}
+#if 0
+    #define LED_PINS    {LED_PIN_RED, LED_PIN_BLUE, LED_PIN_GREEN}
     #define LED_DEFINED 3
+#else
+    #define LED_PIN_WHITE  5
+    #define LED_PINS    {LED_PIN_RED, LED_PIN_BLUE, LED_PIN_GREEN, LED_PIN_WHITE}
+    #define LED_DEFINED 4
+    #define INVERT_LEDS 1
+#endif
 
 #elif defined SNARC
 
