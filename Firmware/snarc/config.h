@@ -30,11 +30,11 @@
 
 // ------ Memory Storage ------
 #define USE_EEPROM
-//#define USE_FLASH_AT45DB
 
 // ------ Door Settings ------
 // #define DOOR_INVERT_PIN // Invert the pin logic to the output Relay/Mosfet
 //#define ENABLE_ESTOP_AS_SAFETY_DEVICE
+//#define ENABLE_ESTOP_AS_PWM_COUNTER
 #define ENABLE_ESTOP_AS_EGRESS_BUTTON
 
 // ------ Ethernet Protocol ------

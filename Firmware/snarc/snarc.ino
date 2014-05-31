@@ -3,7 +3,8 @@
 #include <SoftwareSerial.h>
 #include <SPI.h>
 #include <EEPROM.h>
-
+#include "ST7565.h"
+#include "lcd_st7565.h"
 #include <Time.h>
 /*
  *   Simple NetworkAble RFID Controller firmware, for SNARC, SNARC+, NetTroll and Arduino+Ethernet comptible hardware.
@@ -12,8 +13,6 @@
  
 // TODO: 
 // socket library
-// ntp
-// time library not fully tested ( for onboard card expiry ) 
 // http web interface ( crashes sometimes ) 
 // watchdog reset
 // password on web interface
@@ -41,13 +40,15 @@ void setup()
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     NETWORKCHECKER.init();
     DOOR.init();
-    attachInterrupt(INT_USER, userInterupt, HIGH);
+    LCD.init();
+    attachInterrupt(INT_USER, userInterupt, LOW);
+    Serial.print(freeRam());
 }
 
 void loop()
-{   
+{
     LEDS.toggle(LEDS_WHITE, 2000);
-    MENU.check();
+    //MENU.check();
     
     if(RFID.read(&rfidTag))
     {
@@ -91,4 +92,19 @@ void userInterupt()
 #ifdef ENABLE_ESTOP_AS_EGRESS_BUTTON
   DOOR.unlockDoor(2000); // open door for 2 seconds
 #endif
+}
+
+// this handy function will return the number of bytes currently free in RAM, great for debugging!
+int freeRam(void)
+{
+  extern int  __bss_end;
+  extern int  *__brkval;
+  int free_memory;
+  if((int)__brkval == 0) {
+    free_memory = ((int)&free_memory) - ((int)&__bss_end);
+  }
+  else {
+    free_memory = ((int)&free_memory) - ((int)__brkval);
+  }
+  return free_memory;
 }

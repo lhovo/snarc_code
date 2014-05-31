@@ -40,8 +40,6 @@ void LEDS_GENERIC::init()
   unsigned int i;
   for(i=0; i<LED_DEFINED; i++)
   {
-    Serial.println(pins[i]);
-    //pins[i] = pins_init[i];
     pinMode(pins[i], OUTPUT);
 #ifndef INVERT_LEDS
     digitalWrite(pins[i],    LOW);
