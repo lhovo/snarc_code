@@ -23,6 +23,9 @@
 #include "lcd_st7565.h"
 #include "ST7565.h"
 
+// To get the libary to use the spi lines,
+// initialise the first two pins to zero
+
 // pin 11 - Serial data out (SID)
 // pin 13 - Serial clock out (SCLK)
 // pin 17 - Data/Command select (RS or A0)
@@ -44,15 +47,15 @@ ST7565 glcd(0, 0, 17, 18, 19);
  
 void LCD_ST7565::init(void)
 {
-  // We are using the SPI bus but not in the normal way so disable the clock for now.
-  SPI.end();
-	glcd.begin(0x18);
-	glcd.display(); // show splashscreen
-	delay(2000);
-	glcd.clear();
-	glcd.drawstring(0,0,"Hello World");
+  glcd.begin(0x18);
+  glcd.display(); // show splashscreen
+}
+
+void LCD_ST7565::start(void)
+{
+  glcd.clear();
+  glcd.drawstring(0,0,"Hello World");
   glcd.display();
-  SPI.begin();
 }
 
 LCD_ST7565 LCD;

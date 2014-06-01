@@ -26,9 +26,9 @@ class LCD_ST7565
 {
     public:
         void          init(void);
-        
+        void          start(void);
     private:
-        int          freeRam(void);
+
 };
 
 extern LCD_ST7565 LCD;

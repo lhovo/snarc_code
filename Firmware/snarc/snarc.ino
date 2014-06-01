@@ -28,8 +28,10 @@ char globalBuffer[GLOBAL_BUFFER_LEN];
 
 void setup()
 {    
-    MENU.init(19200); // Set the TX/RX pins to 19200
     LEDS.init();
+    LEDS.on(LEDS_ALL);
+    LCD.init();
+    MENU.init(19200); // Set the TX/RX pins to 19200
     RFID.init();
     MEMORY.init();
     MEMORY.getNetworkInfo(&mySettings);
@@ -40,7 +42,7 @@ void setup()
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     NETWORKCHECKER.init();
     DOOR.init();
-    LCD.init();
+    LCD.start();
     attachInterrupt(INT_USER, userInterupt, LOW);
     Serial.print(freeRam());
 }
