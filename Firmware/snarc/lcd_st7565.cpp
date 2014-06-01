@@ -22,6 +22,7 @@
 
 #include "lcd_st7565.h"
 #include "ST7565.h"
+#include <stdio.h>
 
 // To get the libary to use the spi lines,
 // initialise the first two pins to zero
@@ -32,7 +33,7 @@
 // pin 18 - LCD reset (RST)
 // pin 19 - LCD chip select (CS)
 ST7565 glcd(0, 0, 17, 18, 19);
-
+char timestring[10];
 /******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -55,6 +56,24 @@ void LCD_ST7565::start(void)
 {
   glcd.clear();
   glcd.drawstring(0,0,"Hello World");
+  glcd.display();
+}
+
+void LCD_ST7565::updateCounter(uint32_t time)
+{
+  uint32_t second = time/10;
+  glcd.clear();
+  glcd.drawstring(0,1,"Machine Time:");
+
+  sprintf(timestring, "%02d:", second/3600);
+  glcd.drawstring(0,3,timestring);
+  
+  sprintf(timestring, "%02d:", (second/60)%60);
+  glcd.drawstring(17,3,timestring);
+  
+  sprintf(timestring, "%02d", second%60);
+  glcd.drawstring(34,3,timestring);
+
   glcd.display();
 }
 

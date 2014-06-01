@@ -27,6 +27,7 @@ class LCD_ST7565
     public:
         void          init(void);
         void          start(void);
+        void          updateCounter(uint32_t time);
     private:
 
 };

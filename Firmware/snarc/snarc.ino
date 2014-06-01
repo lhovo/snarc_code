@@ -5,7 +5,9 @@
 #include <EEPROM.h>
 #include "ST7565.h"
 #include "lcd_st7565.h"
+#include "TimerOne.h"
 #include <Time.h>
+
 /*
  *   Simple NetworkAble RFID Controller firmware, for SNARC, SNARC+, NetTroll and Arduino+Ethernet comptible hardware.
  *   Copyright (C) 2013 Luke Hovigton & David Bussenschutt. All right reserved.
@@ -25,12 +27,14 @@
 DeviceInfo mySettings;
 unsigned long rfidTag;
 char globalBuffer[GLOBAL_BUFFER_LEN];
+uint32_t timeUpdate;
 
 void setup()
 {    
     LEDS.init();
     LEDS.on(LEDS_ALL);
     LCD.init();
+
     MENU.init(19200); // Set the TX/RX pins to 19200
     RFID.init();
     MEMORY.init();
@@ -42,9 +46,15 @@ void setup()
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     NETWORKCHECKER.init();
     DOOR.init();
-    LCD.start();
+
+    Timer1.initialize(100000); // initialize timer1, and set a 1/2 second period
+    Timer1.attachInterrupt(timerInterupt);
+
     attachInterrupt(INT_USER, userInterupt, LOW);
     Serial.print(freeRam());
+
+    delay(200);
+    LCD.start();
 }
 
 void loop()
@@ -81,7 +91,9 @@ void loop()
         }
     }
     ETHERNET.listen();   // local http server handler.
-    
+
+    LCD.updateCounter(timeUpdate);
+
     NETWORKCHECKER.listen();
     DOOR.locktimeout();
 }
@@ -89,24 +101,30 @@ void loop()
 void userInterupt()
 {
 #ifdef ENABLE_ESTOP_AS_SAFETY_DEVICE
-  DOOR.lock();
+    DOOR.lock();
 #endif
 #ifdef ENABLE_ESTOP_AS_EGRESS_BUTTON
-  DOOR.unlockDoor(2000); // open door for 2 seconds
+    DOOR.unlockDoor(2000); // open door for 2 seconds
 #endif
+}
+
+void timerInterupt()
+{
+    // Do something
+    timeUpdate++;
 }
 
 // this handy function will return the number of bytes currently free in RAM, great for debugging!
 int freeRam(void)
 {
-  extern int  __bss_end;
-  extern int  *__brkval;
-  int free_memory;
-  if((int)__brkval == 0) {
-    free_memory = ((int)&free_memory) - ((int)&__bss_end);
-  }
-  else {
-    free_memory = ((int)&free_memory) - ((int)__brkval);
-  }
-  return free_memory;
+    extern int  __bss_end;
+    extern int  *__brkval;
+    int free_memory;
+    if((int)__brkval == 0) {
+        free_memory = ((int)&free_memory) - ((int)&__bss_end);
+    }
+    else {
+        free_memory = ((int)&free_memory) - ((int)__brkval);
+    }
+    return free_memory;
 }
