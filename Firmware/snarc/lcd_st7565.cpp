@@ -22,7 +22,6 @@
 
 #include "lcd_st7565.h"
 #include "ST7565.h"
-#include <stdio.h>
 
 // To get the libary to use the spi lines,
 // initialise the first two pins to zero
@@ -33,7 +32,7 @@
 // pin 18 - LCD reset (RST)
 // pin 19 - LCD chip select (CS)
 ST7565 glcd(0, 0, 17, 18, 19);
-char timestring[10];
+
 /******************************************************************************
  * Definitions
  ******************************************************************************/
@@ -59,22 +58,74 @@ void LCD_ST7565::start(void)
   glcd.display();
 }
 
-void LCD_ST7565::updateCounter(uint32_t time)
+void LCD_ST7565::updateCounter(uint16_t time)
 {
-  uint32_t second = time/10;
   glcd.clear();
-  glcd.drawstring(0,1,"Machine Time:");
-
-  sprintf(timestring, "%02d:", second/3600);
-  glcd.drawstring(0,3,timestring);
+  glcd.drawstring(0,0,"Operator:");
+  glcd.drawstring(0,1,"Lord Clancy");
+  formatHalfTime(time, 2, 0);
+  formatFullTime(time, 2, 61); // 128 pixels - (11 chars * 6 pixels) = 62 - 1
   
-  sprintf(timestring, "%02d:", (second/60)%60);
-  glcd.drawstring(17,3,timestring);
-  
-  sprintf(timestring, "%02d", second%60);
-  glcd.drawstring(34,3,timestring);
+  glcd.drawstring(0,6,"Machine Time:");
+  formatFullTime(time, 7, 0);
 
   glcd.display();
+}
+
+
+void LCD_ST7565::formatFullTime(uint16_t time, uint8_t line, uint8_t offset)
+{
+  char timestring[12];
+  uint16_t msToSecond = time/10;
+  
+  int2str(timestring,msToSecond/86400);
+  timestring[2] = ':';
+  int2str(timestring+3,(msToSecond/3600)%24);
+  timestring[5] = ':';
+  int2str(timestring+6,(msToSecond/60)%60);
+  timestring[8] = ':';
+  int2str(timestring+9,msToSecond%60);
+  timestring[11] = 0;
+  glcd.drawstring(0+offset,line,timestring);
+}
+
+void LCD_ST7565::formatHalfTime(uint16_t time, uint8_t line, uint8_t offset)
+{
+  char timestring[6];
+  uint16_t msToSecond = time/10;
+  
+  int2str(timestring,(msToSecond/60)%60);
+  timestring[2] = ':';
+  int2str(timestring+3,msToSecond%60);
+  timestring[5] = 0;
+  glcd.drawstring(0+offset,line,timestring);
+}
+
+void LCD_ST7565::int2str(char* buffer, register int i ) {
+  register unsigned char L = 0;
+  register char c, b;  // lower-byte of i
+
+  // decades (check on lower byte to optimize code)
+  b = char( i );
+  if( b > 9 ) {
+    c = b < 50
+    ? ( b < 30
+       ? ( b < 20 ? 1 : 2 )
+       :   b < 40 ? 3 : 4
+       )
+    : b < 80
+    ? ( i < 60
+       ? 5
+       : i < 70 ? 6 : 7
+       )
+    : i < 90 ? 8 : 9;
+    buffer[ L++ ] = c + 48;
+    b -= c * 10;
+  }
+  else buffer[ L++ ] = 48;
+
+  // last digit
+  buffer[ L++ ] = b + 48;
 }
 
 LCD_ST7565 LCD;

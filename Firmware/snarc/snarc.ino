@@ -27,7 +27,7 @@
 DeviceInfo mySettings;
 unsigned long rfidTag;
 char globalBuffer[GLOBAL_BUFFER_LEN];
-uint32_t timeUpdate;
+uint16_t timeUpdate;
 
 void setup()
 {    
