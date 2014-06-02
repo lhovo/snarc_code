@@ -58,7 +58,7 @@ void LCD_ST7565::start(void)
   glcd.display();
 }
 
-void LCD_ST7565::updateCounter(uint16_t time)
+void LCD_ST7565::updateCounter(uint32_t time)
 {
   glcd.clear();
   glcd.drawstring(0,0,"Operator:");
@@ -73,10 +73,10 @@ void LCD_ST7565::updateCounter(uint16_t time)
 }
 
 
-void LCD_ST7565::formatFullTime(uint16_t time, uint8_t line, uint8_t offset)
+void LCD_ST7565::formatFullTime(uint32_t time, uint8_t line, uint8_t offset)
 {
   char timestring[12];
-  uint16_t msToSecond = time/10;
+  uint32_t msToSecond = time/10;
   
   int2str(timestring,msToSecond/86400);
   timestring[2] = ':';
@@ -89,10 +89,10 @@ void LCD_ST7565::formatFullTime(uint16_t time, uint8_t line, uint8_t offset)
   glcd.drawstring(0+offset,line,timestring);
 }
 
-void LCD_ST7565::formatHalfTime(uint16_t time, uint8_t line, uint8_t offset)
+void LCD_ST7565::formatHalfTime(uint32_t time, uint8_t line, uint8_t offset)
 {
   char timestring[6];
-  uint16_t msToSecond = time/10;
+  uint32_t msToSecond = time/10;
   
   int2str(timestring,(msToSecond/60)%60);
   timestring[2] = ':';
@@ -102,30 +102,10 @@ void LCD_ST7565::formatHalfTime(uint16_t time, uint8_t line, uint8_t offset)
 }
 
 void LCD_ST7565::int2str(char* buffer, register int i ) {
-  register unsigned char L = 0;
-  register char c, b;  // lower-byte of i
+  uint8_t L = 0;
 
-  // decades (check on lower byte to optimize code)
-  b = char( i );
-  if( b > 9 ) {
-    c = b < 50
-    ? ( b < 30
-       ? ( b < 20 ? 1 : 2 )
-       :   b < 40 ? 3 : 4
-       )
-    : b < 80
-    ? ( i < 60
-       ? 5
-       : i < 70 ? 6 : 7
-       )
-    : i < 90 ? 8 : 9;
-    buffer[ L++ ] = c + 48;
-    b -= c * 10;
-  }
-  else buffer[ L++ ] = 48;
-
-  // last digit
-  buffer[ L++ ] = b + 48;
+  buffer[ L++ ] = (i/10)%10 + 48;
+  buffer[ L++ ] = i%10 + 48;
 }
 
 LCD_ST7565 LCD;
