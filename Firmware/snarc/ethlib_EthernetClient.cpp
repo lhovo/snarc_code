@@ -1,5 +1,5 @@
-#include "utility/w5100.h"
-#include "utility/socket.h"
+#include "ethlib_w5100.h"
+#include "ethlib_socket.h"
 
 extern "C" {
   #include "string.h"
@@ -7,10 +7,10 @@ extern "C" {
 
 #include "Arduino.h"
 
-#include "Ethernet.h"
-#include "EthernetClient.h"
-#include "EthernetServer.h"
-#include "Dns.h"
+#include "ethlib_Ethernet.h"
+#include "ethlib_EthernetClient.h"
+#include "ethlib_EthernetServer.h"
+#include "ethlib_Dns.h"
 
 uint16_t EthernetClient::_srcport = 1024;
 

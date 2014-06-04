@@ -26,11 +26,11 @@
  * bjoern@cs.stanford.edu 12/30/2008
  */
 
-#include "utility/w5100.h"
-#include "utility/socket.h"
-#include "Ethernet.h"
+#include "ethlib_w5100.h"
+#include "ethlib_socket.h"
+#include "ethlib_Ethernet.h"
 #include "Udp.h"
-#include "Dns.h"
+#include "ethlib_Dns.h"
 
 /* Constructor */
 EthernetUDP::EthernetUDP() : _sock(MAX_SOCK_NUM) {}

@@ -38,8 +38,8 @@
 #define ENABLE_ESTOP_AS_EGRESS_BUTTON
 
 // ------ Ethernet Protocol ------
-#define USE_ETHERNET_HTTP
-//#define USE_ETHERNET_SOCKET
+//#define USE_ETHERNET_HTTP
+#define USE_ETHERNET_SOCKET
 //#define USE_ETHERNET_HTTP_SERVER
 
 /* -------------------------------------
@@ -47,7 +47,7 @@
  * -------------------------------------
  */
 
-#include <Ethernet.h>
+#include "ethlib_Ethernet.h"
 #include <Time.h>
 
 #define MEMORY_DEVICE_NAME_MAX_LENGTH 12

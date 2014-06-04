@@ -1,5 +1,4 @@
 #include "config.h"
-#include <Ethernet.h>
 #include <SoftwareSerial.h>
 #include <SPI.h>
 #include <EEPROM.h>

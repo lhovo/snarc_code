@@ -1,5 +1,5 @@
-#include "utility/w5100.h"
-#include "utility/socket.h"
+#include "ethlib_w5100.h"
+#include "ethlib_socket.h"
 
 static uint16_t local_port;
 

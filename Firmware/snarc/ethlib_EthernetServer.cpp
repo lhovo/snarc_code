@@ -1,12 +1,12 @@
-#include "utility/w5100.h"
-#include "utility/socket.h"
+#include "ethlib_w5100.h"
+#include "ethlib_socket.h"
 extern "C" {
 #include "string.h"
 }
 
-#include "Ethernet.h"
-#include "EthernetClient.h"
-#include "EthernetServer.h"
+#include "ethlib_Ethernet.h"
+#include "ethlib_EthernetClient.h"
+#include "ethlib_EthernetServer.h"
 
 EthernetServer::EthernetServer(uint16_t port)
 {

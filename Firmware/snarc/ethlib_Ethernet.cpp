@@ -2,8 +2,8 @@
  modified 12 Aug 2013
  by Soohwan Kim (suhwan@wiznet.co.kr)
 */
-#include "Ethernet.h"
-#include "Dhcp.h"
+#include "ethlib_Ethernet.h"
+#include "ethlib_Dhcp.h"
 
 // XXX: don't make assumptions about the value of MAX_SOCK_NUM.
 uint8_t EthernetClass::_state[MAX_SOCK_NUM] = { 0, };

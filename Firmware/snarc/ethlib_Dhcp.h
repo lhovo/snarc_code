@@ -4,7 +4,7 @@
 #ifndef Dhcp_h
 #define Dhcp_h
 
-#include "EthernetUdp.h"
+#include "ethlib_EthernetUdp.h"
 
 /* DHCP state machine. */
 #define STATE_DHCP_START 0

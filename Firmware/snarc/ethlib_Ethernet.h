@@ -6,11 +6,11 @@
 #define ethernet_h
 
 #include <inttypes.h>
-#include "utility/w5100.h"
+#include "ethlib_w5100.h"
 #include "IPAddress.h"
-#include "EthernetClient.h"
-#include "EthernetServer.h"
-#include "Dhcp.h"
+#include "ethlib_EthernetClient.h"
+#include "ethlib_EthernetServer.h"
+#include "ethlib_Dhcp.h"
 
 
 

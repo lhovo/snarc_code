@@ -1,13 +1,13 @@
 // DHCP Library v0.3 - April 25, 2009
 // Author: Jordan Terrell - blog.jordanterrell.com
 
-#include "utility/w5100.h"
+#include "ethlib_w5100.h"
 
 #include <string.h>
 #include <stdlib.h>
-#include "Dhcp.h"
+#include "ethlib_Dhcp.h"
 #include "Arduino.h"
-#include "utility/util.h"
+#include "ethlib_util.h"
 
 int DhcpClass::beginWithDHCP(uint8_t *mac, unsigned long timeout, unsigned long responseTimeout)
 {
