@@ -11,24 +11,19 @@
 #define	W5100_H_INCLUDED
 
 #include <SPI.h>
+#include "config.h"
 
 typedef uint8_t SOCKET;
-
-//#define W5100_ETHERNET_SHIELD // Arduino Ethenret Shield and Compatibles ...
-//#define W5200_ETHERNET_SHIELD // WIZ820io, W5200 Ethernet Shield 
-#define W5500_ETHERNET_SHIELD   // WIZ550io, ioShield series of WIZnet
 
 #if defined(W5500_ETHERNET_SHIELD)
 //#define WIZ550io_WITH_MACADDRESS // Use assigned MAC address of WIZ550io
 #include "ethlib_w5500.h"
-#endif
 
-#if defined(W5200_ETHERNET_SHIELD)
+#elif defined(W5200_ETHERNET_SHIELD)
 #include "ethlib_w5200.h"
-#endif
 
-#if defined(W5100_ETHERNET_SHIELD)
-#define MAX_SOCK_NUM 4
+#elif defined(W5100_ETHERNET_SHIELD)
+#define MAX_SOCK_NUM 2 //4
 
 #define IDM_OR  0x8000
 #define IDM_AR0 0x8001
@@ -419,6 +414,9 @@ void W5100Class::setRetransmissionTime(uint16_t _timeout) {
 void W5100Class::setRetransmissionCount(uint8_t _retry) {
   writeRCR(_retry);
 }
+
+#else
+#error NO ETHERNET_SHIELD DEFINED IN CONFIG
 #endif
 
 #endif

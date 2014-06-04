@@ -5,6 +5,7 @@
 #ifndef ethernet_h
 #define ethernet_h
 
+#include "config.h"
 #include <inttypes.h>
 #include "ethlib_w5100.h"
 #include "IPAddress.h"
@@ -12,7 +13,9 @@
 #include "ethlib_EthernetServer.h"
 #include "ethlib_Dhcp.h"
 
-
+#ifndef MAX_SOCK_NUM
+#define MAX_SOCK_NUM 2
+#endif
 
 class EthernetClass {
 private:

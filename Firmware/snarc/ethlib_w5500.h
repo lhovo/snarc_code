@@ -10,7 +10,11 @@
 #ifndef	W5500_H_INCLUDED
 #define	W5500_H_INCLUDED
 
-#define MAX_SOCK_NUM 8
+#include "config.h"
+
+#if defined(W5500_ETHERNET_SHIELD)
+#define MAX_SOCK_NUM 2 // 8
+
 /*
 class MR {
 public:
@@ -419,4 +423,5 @@ uint8_t W5500Class::getPHYCFGR() {
   return read(0x002E, 0x00);
 }
 
+#endif
 #endif

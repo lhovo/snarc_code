@@ -20,7 +20,8 @@
 #define __CONFIGURE_H__
 
 // ------ Define Board ------
-#define SNARC_PLUS
+//#define SNARC_PLUS
+#define NETTROLL
 //#define SNARC
 
 // ------ Set RFID Input ------
@@ -47,8 +48,9 @@
  * -------------------------------------
  */
 
-#include "ethlib_Ethernet.h"
 #include <Time.h>
+#include "IPAddress.h"
+#include <inttypes.h>
 
 #define MEMORY_DEVICE_NAME_MAX_LENGTH 12
 #define GLOBAL_BUFFER_LEN             40
@@ -61,7 +63,7 @@ struct DeviceInfo {
   IPAddress     gateway;   // Gateway to the Internet
   IPAddress     subnet;    // Subnet Mask
   IPAddress     server;    // IP address of the authentication server
-  byte          mac[6];    // Mac address of this device
+  uint8_t       mac[6];    // Mac address of this device
   char          deviceName[MEMORY_DEVICE_NAME_MAX_LENGTH]; // Name/Location of this device
   unsigned long int id;        // Device unique id can not exceed 65,536
 };
@@ -88,10 +90,14 @@ extern DeviceInfo mySettings;
 #define LEDS_WHITE  1<<3
 #define LEDS_ALL    (LEDS_RED | LEDS_BLUE | LEDS_GREEN | LEDS_WHITE)
 
+
+//#define W5100_ETHERNET_SHIELD // Arduino Ethenret Shield and Compatibles ...
+//#define W5200_ETHERNET_SHIELD // WIZ820io, W5200 Ethernet Shield
+//#define W5500_ETHERNET_SHIELD   // WIZ550io, ioShield series of WIZnet
 // --- SNARC_PLUS Board Config ---
 #ifdef SNARC_PLUS
+    #define W5200_ETHERNET_SHIELD // WIZ820io, W5200 Ethernet Shield
 
-    #include "leds_generic.h"
     #define LEDS         generic_leds
 
     #define DOOR_PIN           8
@@ -104,20 +110,36 @@ extern DeviceInfo mySettings;
     #define LED_PIN_RED    10
     #define LED_PIN_BLUE   9
     #define LED_PIN_GREEN  6
-    
-#if 0
+
     #define LED_PINS    {LED_PIN_RED, LED_PIN_BLUE, LED_PIN_GREEN}
     #define LED_DEFINED 3
-#else
+
+    #include "leds_generic.h"
+#elif defined NETTROLL
+    #define W5500_ETHERNET_SHIELD   // WIZ550io, ioShield series of WIZnet
+
+    #define LEDS         generic_leds
+
+    #define DOOR_PIN           8
+    #define ETHERNET_CS        4
+    #define ETHERNET_RESET_PIN 7
+
+    #define INT_ETHERNET       0
+    #define INT_USER           1
+
+    #define LED_PIN_RED    10
+    #define LED_PIN_BLUE   9
+    #define LED_PIN_GREEN  6
+
     #define LED_PIN_WHITE  5
     #define LED_PINS    {LED_PIN_RED, LED_PIN_BLUE, LED_PIN_GREEN, LED_PIN_WHITE}
     #define LED_DEFINED 4
     #define INVERT_LEDS 1
-#endif
-
-#elif defined SNARC
 
     #include "leds_generic.h"
+#elif defined SNARC
+    #define W5200_ETHERNET_SHIELD // WIZ820io, W5200 Ethernet Shield
+
     #define LEDS         generic_leds
 
     #define DOOR_PIN            5
@@ -134,10 +156,14 @@ extern DeviceInfo mySettings;
     
     #define LED_PINS    {LED_PIN_RED, LED_PIN_YELLOW, LED_PIN_GREEN}
     #define LED_DEFINED 3
-    
+
+    #include "leds_generic.h"
 #else
     #error No Board Defined!
 #endif
+
+// --- Include ethernet chip libary --
+#include "ethlib_Ethernet.h"
 
 // --- Include Door code ---
 #include "door_actuator.h"

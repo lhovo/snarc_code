@@ -10,10 +10,13 @@
 #ifndef	W5200_H_INCLUDED
 #define	W5200_H_INCLUDED
 
+#include "config.h"
+
+#if defined(W5200_ETHERNET_SHIELD)
 //#include <avr/pgmspace.h>
 //#include <SPI.h>
 
-#define MAX_SOCK_NUM 8
+#define MAX_SOCK_NUM 2 // 8
 //typedef uint8_t SOCKET;
 /*
 class MR {
@@ -397,4 +400,5 @@ void W5200Class::setRetransmissionCount(uint8_t _retry) {
   writeRCR(_retry);
 }
 
+#endif
 #endif
