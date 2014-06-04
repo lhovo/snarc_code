@@ -10,7 +10,7 @@ extern "C" {
 #include "ethlib_Ethernet.h"
 #include "ethlib_EthernetClient.h"
 #include "ethlib_EthernetServer.h"
-#include "ethlib_Dns.h"
+//#include "ethlib_Dns.h"
 
 uint16_t EthernetClient::_srcport = 1024;
 
@@ -23,16 +23,16 @@ EthernetClient::EthernetClient(uint8_t sock) : _sock(sock) {
 int EthernetClient::connect(const char* host, uint16_t port) {
   // Look up the host first
   int ret = 0;
-  DNSClient dns;
-  IPAddress remote_addr;
-
-  dns.begin(Ethernet.dnsServerIP());
-  ret = dns.getHostByName(host, remote_addr);
-  if (ret == 1) {
-    return connect(remote_addr, port);
-  } else {
+//  DNSClient dns;
+//  IPAddress remote_addr;
+//
+//  dns.begin(Ethernet.dnsServerIP());
+//  ret = dns.getHostByName(host, remote_addr);
+//  if (ret == 1) {
+//    return connect(remote_addr, port);
+//  } else {
     return ret;
-  }
+//  }
 }
 
 int EthernetClient::connect(IPAddress ip, uint16_t port) {
