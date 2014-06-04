@@ -30,6 +30,7 @@ class LCD_ST7565
         void          updateCounter(uint32_t time);
     private:
         void          formatFullTime(uint32_t time, uint8_t line, uint8_t offset);
+        void          formatHourTime(uint32_t time, uint8_t line, uint8_t offset);
         void          formatHalfTime(uint32_t time, uint8_t line, uint8_t offset);
         void          int2str(char* buffer, register int i);
 };

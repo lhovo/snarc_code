@@ -66,12 +66,14 @@ void LCD_ST7565::updateCounter(uint32_t time)
   formatHalfTime(time, 2, 0);
   formatFullTime(time, 2, 61); // 128 pixels - (11 chars * 6 pixels) = 62 - 1
   
+  glcd.drawstring(0,4,"Maintain in:");
+  formatHourTime(time, 4, 79); // 128 pixels - (8 chars * 6 pixels) = 80 - 1
+  
   glcd.drawstring(0,6,"Machine Time:");
   formatFullTime(time, 7, 0);
 
   glcd.display();
 }
-
 
 void LCD_ST7565::formatFullTime(uint32_t time, uint8_t line, uint8_t offset)
 {
@@ -86,6 +88,20 @@ void LCD_ST7565::formatFullTime(uint32_t time, uint8_t line, uint8_t offset)
   timestring[8] = ':';
   int2str(timestring+9,msToSecond%60);
   timestring[11] = 0;
+  glcd.drawstring(0+offset,line,timestring);
+}
+
+void LCD_ST7565::formatHourTime(uint32_t time, uint8_t line, uint8_t offset)
+{
+  char timestring[9];
+  uint32_t msToSecond = time/10;
+  
+  int2str(timestring,(msToSecond/3600));
+  timestring[2] = ':';
+  int2str(timestring+3,(msToSecond/60)%60);
+  timestring[5] = ':';
+  int2str(timestring+6,msToSecond%60);
+  timestring[8] = 0;
   glcd.drawstring(0+offset,line,timestring);
 }
 
