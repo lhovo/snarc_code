@@ -39,8 +39,8 @@
 #define ENABLE_ESTOP_AS_EGRESS_BUTTON
 
 // ------ Ethernet Protocol ------
-//#define USE_ETHERNET_HTTP
-#define USE_ETHERNET_SOCKET
+#define USE_ETHERNET_HTTP
+//#define USE_ETHERNET_SOCKET
 //#define USE_ETHERNET_HTTP_SERVER
 
 /* -------------------------------------

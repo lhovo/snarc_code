@@ -3,7 +3,7 @@
  by Soohwan Kim (suhwan@wiznet.co.kr)
 */
 #include "ethlib_Ethernet.h"
-#include "ethlib_Dhcp.h"
+#include "ethlib_EthernetDhcp.h"
 
 // XXX: don't make assumptions about the value of MAX_SOCK_NUM.
 uint8_t EthernetClass::_state[MAX_SOCK_NUM] = { 0, };
@@ -72,26 +72,13 @@ void EthernetClass::begin(IPAddress local_ip, IPAddress dns_server, IPAddress ga
 #else
 int EthernetClass::begin(uint8_t *mac_address)
 {
-  _dhcp = new DhcpClass();
-
   // Initialise the basic info
   W5100.init();
   W5100.setMACAddress(mac_address);
   W5100.setIPAddress(IPAddress(0,0,0,0).raw_address());
 
-  // Now try to get our config info from a DHCP server
-  int ret = _dhcp->beginWithDHCP(mac_address);
-  if(ret == 1)
-  {
-    // We've successfully found a DHCP server and got our configuration info, so set things
-    // accordingly
-    W5100.setIPAddress(_dhcp->getLocalIp().raw_address());
-    W5100.setGatewayIp(_dhcp->getGatewayIp().raw_address());
-    W5100.setSubnetMask(_dhcp->getSubnetMask().raw_address());
-    _dnsServerAddress = _dhcp->getDnsServerIp();
-  }
-
-  return ret;
+  // No DHCP Support
+  return 0;
 }
 
 void EthernetClass::begin(uint8_t *mac_address, IPAddress local_ip)
@@ -131,28 +118,7 @@ void EthernetClass::begin(uint8_t *mac, IPAddress local_ip, IPAddress dns_server
 #endif
 
 int EthernetClass::maintain(){
-  int rc = DHCP_CHECK_NONE;
-  if(_dhcp != NULL){
-    //we have a pointer to dhcp, use it
-    rc = _dhcp->checkLease();
-    switch ( rc ){
-      case DHCP_CHECK_NONE:
-        //nothing done
-        break;
-      case DHCP_CHECK_RENEW_OK:
-      case DHCP_CHECK_REBIND_OK:
-        //we might have got a new IP.
-        W5100.setIPAddress(_dhcp->getLocalIp().raw_address());
-        W5100.setGatewayIp(_dhcp->getGatewayIp().raw_address());
-        W5100.setSubnetMask(_dhcp->getSubnetMask().raw_address());
-        _dnsServerAddress = _dhcp->getDnsServerIp();
-        break;
-      default:
-        //this is actually a error, it will retry though
-        break;
-    }
-  }
-  return rc;
+  return DHCP_CHECK_NONE;
 }
 
 IPAddress EthernetClass::localIP()

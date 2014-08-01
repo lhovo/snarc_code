@@ -26,14 +26,17 @@
 DeviceInfo mySettings;
 unsigned long rfidTag;
 char globalBuffer[GLOBAL_BUFFER_LEN];
+#ifdef USE_LCD
 uint32_t timeUpdate = 0;
+#endif
 
 void setup()
 {    
     LEDS.init();
     LEDS.on(LEDS_ALL);
+#ifdef USE_LCD
     LCD.init();
-
+#endif
     MENU.init(19200); // Set the TX/RX pins to 19200
     RFID.init();
     MEMORY.init();
@@ -45,10 +48,10 @@ void setup()
     ETHERNET.init(mySettings.mac, mySettings.ip, mySettings.gateway, mySettings.subnet, mySettings.server);
     NETWORKCHECKER.init();
     DOOR.init();
-
+#ifdef USE_LCD
     Timer1.initialize(100000); // initialize timer1, and set a 1/2 second period
     Timer1.attachInterrupt(timerInterupt);
-
+#endif
     attachInterrupt(INT_USER, userInterupt, LOW);
     Serial.print(freeRam());
 
@@ -90,9 +93,9 @@ void loop()
         }
     }
     ETHERNET.listen();   // local http server handler.
-
+#ifdef USE_LCD
     LCD.updateCounter(timeUpdate);
-
+#endif
     NETWORKCHECKER.listen();
     DOOR.locktimeout();
 }
@@ -106,13 +109,13 @@ void userInterupt()
     DOOR.unlockDoor(2000); // open door for 2 seconds
 #endif
 }
-
+#ifdef USE_LCD
 void timerInterupt()
 {
     // Do something
     timeUpdate++;
 }
-
+#endif
 // this handy function will return the number of bytes currently free in RAM, great for debugging!
 int freeRam(void)
 {

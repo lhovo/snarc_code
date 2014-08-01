@@ -11,7 +11,6 @@
 #include "IPAddress.h"
 #include "ethlib_EthernetClient.h"
 #include "ethlib_EthernetServer.h"
-#include "ethlib_Dhcp.h"
 
 #ifndef MAX_SOCK_NUM
 #define MAX_SOCK_NUM 2
@@ -20,7 +19,6 @@
 class EthernetClass {
 private:
   IPAddress _dnsServerAddress;
-  DhcpClass* _dhcp;
 public:
   static uint8_t _state[MAX_SOCK_NUM];
   static uint16_t _server_port[MAX_SOCK_NUM];

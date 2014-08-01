@@ -43,7 +43,7 @@ void ETHERNET_HTTP::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress s
     digitalWrite(ETHERNET_RESET_PIN, HIGH);
 #endif
     delay(1000);   // delay boot by precautionary 1sec 
-    Ethernet.begin(mac,ip,gateway,subnet, ETHERNET_CS);    
+    Ethernet.begin(mac,ip,gateway,subnet); //, ETHERNET_CS);    
     serverIP = server;
     localserver.begin();
 }
@@ -68,19 +68,19 @@ void ETHERNET_HTTP::print_settings(void)
     Serial.print(F("DNS:      "));
     Serial.println(Ethernet.dnsServerIP());
 
-    Ethernet.macAddress(macAdd);
-    Serial.print(F("Mac:      "));
-    Serial.print(macAdd[0],16);
-    Serial.print(F(":"));
-    Serial.print(macAdd[1],16);
-    Serial.print(F(":"));
-    Serial.print(macAdd[2],16);
-    Serial.print(F(":"));
-    Serial.print(macAdd[3],16);
-    Serial.print(F(":"));
-    Serial.print(macAdd[4],16);
-    Serial.print(F(":"));
-    Serial.println(macAdd[5],16);
+//    Ethernet.macAddress(macAdd);
+//    Serial.print(F("Mac:      "));
+//    Serial.print(macAdd[0],16);
+//    Serial.print(F(":"));
+//    Serial.print(macAdd[1],16);
+//    Serial.print(F(":"));
+//    Serial.print(macAdd[2],16);
+//    Serial.print(F(":"));
+//    Serial.print(macAdd[3],16);
+//    Serial.print(F(":"));
+//    Serial.print(macAdd[4],16);
+//    Serial.print(F(":"));
+//    Serial.println(macAdd[5],16);
 
     Serial.print(F("Server:   "));
     Serial.println(serverIP);

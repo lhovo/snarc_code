@@ -30,6 +30,7 @@
 #define POLL_INTERVAL 60ul
 #define VERSION_NO 1
 
+#ifdef USE_ETHERNET_SOCKET
 /******************************************************************************
  * Constructors
  ******************************************************************************/
@@ -48,7 +49,7 @@ void ETHERNET_SOCKET::init(byte *mac, IPAddress ip, IPAddress gateway, IPAddress
     digitalWrite(ETHERNET_RESET_PIN, HIGH);
 #endif
     delay(1000);   // delay boot by precautionary 1sec 
-    Ethernet.begin(mac,ip,gateway,subnet, ETHERNET_CS);
+    Ethernet.begin(mac,ip,gateway,subnet); //, ETHERNET_CS);
     client.connect(server, PORTN);
     serverIP = server;
 }
@@ -77,14 +78,14 @@ void ETHERNET_SOCKET::print_settings(void)
     Serial.print(F("DNS:      "));
     Serial.println(Ethernet.dnsServerIP());
 
-    Ethernet.macAddress(macAdd);
-    Serial.print(F("Mac:      "));
-    for(i=0;i<5;i++)
-    {
-      Serial.print(macAdd[i],16);
-      Serial.print(F(":"));
-    }
-    Serial.print(macAdd[5],16);
+//    Ethernet.macAddress(macAdd);
+//    Serial.print(F("Mac:      "));
+//    for(i=0;i<5;i++)
+//    {
+//      Serial.print(macAdd[i],16);
+//      Serial.print(F(":"));
+//    }
+//    Serial.print(macAdd[5],16);
 
     Serial.print(F("Server:   "));
     Serial.println(serverIP);
@@ -280,3 +281,5 @@ uint16_t ETHERNET_SOCKET_CHECKER::calc_CRC(unsigned char *p, uint16_t packetLeng
 
 ETHERNET_SOCKET_CHECKER ethernetSocketChecker;
 ETHERNET_SOCKET ethernetSocket;
+
+#endif //USE_ETHERNET_SOCKET

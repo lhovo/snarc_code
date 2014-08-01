@@ -29,7 +29,7 @@
 #include "ethlib_w5100.h"
 #include "ethlib_socket.h"
 #include "ethlib_Ethernet.h"
-#include "Udp.h"
+#include "ethlib_EthernetUdp.h"
 
 /* Constructor */
 EthernetUDP::EthernetUDP() : _sock(MAX_SOCK_NUM) {}
