@@ -5,7 +5,6 @@
 #include "ST7565.h"
 #include "lcd_st7565.h"
 #include "TimerOne.h"
-#include <Time.h>
 
 /*
  *   Simple NetworkAble RFID Controller firmware, for SNARC, SNARC+, NetTroll and Arduino+Ethernet comptible hardware.
@@ -83,7 +82,7 @@ void loop()
              DOOR.unlockDoor(2000); // open door for 2 seconds , no logging
              
              // Record Card for next time
-             RFID_info newCard = {rfidTag, now()+SECS_PER_WEEK};
+             RFID_info newCard = {rfidTag};
              MEMORY.storeAccess(&newCard);
              LEDS.off(LEDS_GREEN | LEDS_RED);
         }

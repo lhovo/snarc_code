@@ -70,7 +70,6 @@ struct DeviceInfo {
 
 struct RFID_info {
     unsigned long  card;
-    time_t         expiration;
 };
 
 extern unsigned long rfidTag;

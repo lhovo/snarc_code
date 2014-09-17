@@ -76,7 +76,7 @@ void DOOR_ACTUATOR::unlockDoor(unsigned long int timeMs, unsigned long *card_no,
     {
         if(ETHERNET.check_tag(card_no, deviceID, name) == 0)
         {
-           MEMORY.expireAccess(card_no);
+           //MEMORY.expireAccess(card_no);
         }     
     }
 }

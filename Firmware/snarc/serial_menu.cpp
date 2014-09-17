@@ -114,9 +114,6 @@ void SERIAL_MENU::display(void)
                     // Wait for card to be read
                     while(!RFID.read(&newCard.card)){}
                     
-                    // Make the card expire a week from now
-                    newCard.expiration = now()+SECS_PER_WEEK;
-                    
                     if(MEMORY.storeAccess(&newCard))
                     {
                         Serial.print(F("-- "));

@@ -22,7 +22,7 @@
 #include "config.h"
 #include "Arduino.h"
 #include <IPAddress.h>
-#include <Ethernet.h>
+#include "ethlib_Ethernet.h"
 
 class ETHERNET_SOCKET
 {

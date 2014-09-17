@@ -26,9 +26,8 @@
 #endif
 
 #include "Arduino.h"
-#include <Dns.h>
 #include <IPAddress.h>
-#include <Ethernet.h>
+#include "ethlib_Ethernet.h"
 
 class ETHERNET_HTTP
 {
