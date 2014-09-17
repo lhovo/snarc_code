@@ -3,8 +3,11 @@
 #include <SPI.h>
 #include <EEPROM.h>
 #include "ST7565.h"
+
+#ifdef USE_LCD
 #include "lcd_st7565.h"
 #include "TimerOne.h"
+#endif
 
 /*
  *   Simple NetworkAble RFID Controller firmware, for SNARC, SNARC+, NetTroll and Arduino+Ethernet comptible hardware.
@@ -55,7 +58,9 @@ void setup()
     Serial.print(freeRam());
 
     delay(200);
+#ifdef USE_LCD
     LCD.start();
+#endif
 }
 
 void loop()
