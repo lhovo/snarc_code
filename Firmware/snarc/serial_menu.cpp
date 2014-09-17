@@ -142,23 +142,12 @@ void SERIAL_MENU::display(void)
                     prompt();
                 break;
                 
-                // Expire a card, typed or scanned
+                // Expire a cards, typed or scanned
                 case 'z':
-                    Serial.println(F("Scan card now, or type ID"));
                     
-                    // Wait for card to be read
-                    while(!RFID.read(&newCard.card)){}
-                    
-                    if(MEMORY.expireAccess(&newCard.card))
+                    if(MEMORY.expireAccess())
                     {
-                        Serial.print(F("-- "));
-                        Serial.print(newCard.card);
-                        Serial.println(F(" EXPIRED --"));   
-                    }
-                    else
-                    {
-                        Serial.print(F("Couldn't find card -- "));
-                        Serial.println(newCard.card);   
+                        Serial.println(F("-- ALL CARDS REMOVED --")); 
                     }
                     break;
                 

@@ -43,7 +43,7 @@ class MEMORY_EEPROM
         
         bool storeAccess(RFID_info *access); 
         bool accessAllowed(unsigned long *rfid);
-        bool expireAccess(unsigned long *rfid);
+        bool expireAccess();
         
         void printAccessList(void);
         bool erase(void);

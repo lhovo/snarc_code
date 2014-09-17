@@ -232,35 +232,17 @@ bool MEMORY_EEPROM::accessAllowed(unsigned long *rfid)
     return false;
 }
 
-//// Set the timestamp to zero
-//bool MEMORY_EEPROM::expireAccess(unsigned long *rfid)
-//{
-//    unsigned int i,j;
-//    RFID_info entry;
-//    
-//    for(i=MEMORY_HEADER_LEN;;i+=MEMORY_RFID_LENGTH)
-//    {
-//        for(j=0;j<MEMORY_RFID_LENGTH;j++)
-//        {
-//            ((byte*) &entry)[j] = EEPROM.read(i+j); 
-//        }
-//        
-//        Serial.println(entry.card);
-//        if(entry.card != 0xFFFFFFFF)
-//        {
-//            if(entry.card == *rfid)
-//            {
-//                // Write new data to the same location
-//                for(j=sizeof(entry.card);j<MEMORY_RFID_LENGTH;j++)
-//                {
-//                    EEPROM.write(i+j, ((byte*) &entry)[j]);
-//                }
-//                return true;
-//            }
-//        }
-//    }
-//    return false; 
-//}
+// Set the timestamp to zero
+bool MEMORY_EEPROM::expireAccess()
+{
+    unsigned int i;
+    
+    for(i=MEMORY_HEADER_LEN;;i+=MEMORY_RFID_LENGTH)
+    {
+        EEPROM.write(i, 0xff);
+    }
+    return true; 
+}
 
 // Print access list and timestamps
 void MEMORY_EEPROM::printAccessList(void)
@@ -288,8 +270,9 @@ void MEMORY_EEPROM::printAccessList(void)
 
 bool MEMORY_EEPROM::erase(void)
 {
-    for (int i = 0; i < 512; i++)
+    for (int i = 0; i < 512; i++) {
       EEPROM.write(i, 0xff);
+    }
     
     return true;   
 }
