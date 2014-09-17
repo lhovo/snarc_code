@@ -22,7 +22,7 @@
 #include "config.h"
 #include "Arduino.h"
 #include <IPAddress.h>
-#include <Time.h>
+//#include <Time.h>
 #include <EEPROM.h>
 
 #ifndef MEMORY_DEVICE_NAME_MAX_LENGTH
