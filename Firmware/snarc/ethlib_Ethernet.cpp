@@ -108,11 +108,10 @@ void EthernetClass::begin(uint8_t *mac_address, IPAddress local_ip, IPAddress dn
 void EthernetClass::begin(uint8_t *mac, IPAddress local_ip, IPAddress dns_server, IPAddress gateway, IPAddress subnet)
 {
   W5100.init();
-  W5100.setMACAddress(mac);
- // FIX ME.  
-//  W5100.setIPAddress(local_ip._address);
-//  W5100.setGatewayIp(gateway._address);
-//  W5100.setSubnetMask(subnet._address);
+  W5100.setMACAddress(mac); 
+  W5100.setIPAddress(local_ip._address);
+  W5100.setGatewayIp(gateway._address);
+  W5100.setSubnetMask(subnet._address);
   _dnsServerAddress = dns_server;
 }
 
