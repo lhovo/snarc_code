@@ -132,7 +132,6 @@ extern DeviceInfo mySettings;
     #define LED_PIN_WHITE  5
     #define LED_PINS    {LED_PIN_RED, LED_PIN_BLUE, LED_PIN_GREEN, LED_PIN_WHITE}
     #define LED_DEFINED 4
-    #define INVERT_LEDS 1
 
     #include "leds_generic.h"
 #elif defined SNARC
