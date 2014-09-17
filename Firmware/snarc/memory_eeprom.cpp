@@ -259,7 +259,7 @@ void MEMORY_EEPROM::printAccessList(void)
         
         if(entry.card != 0xFFFFFFFF)
         {
-            Serial.print(entry.card);
+            Serial.println(entry.card);
         }
         else
         {

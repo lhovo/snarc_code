@@ -199,9 +199,28 @@ void ETHERNET_HTTP::listen(void)
                   //store characters to string
                   globalBuffer[x] = c;
               }
-              Serial.println(globalBuffer);
               if (c == '\n' && currentLineIsBlank)
               {
+                globalBuffer[x] = 0;
+                
+                  Serial.println(globalBuffer);
+                  
+                  
+                  if ( globalBuffer[0] == ';' ) {   
+                      
+                    MEMORY.expireAccess();  // clear all cards in eeprom 
+                    
+                    
+                    RFID_info a; 
+                    a.card = atol(globalBuffer+1);
+                   // globalBuffer--;
+                    // everything between the tag and the \n is nominally a RFID tag to write into te eeprom.
+                    MEMORY.storeAccess(&a); 
+                 // } 
+                    
+                    
+                  } 
+       
                   // send a standard http response header
                   incomingclient.println(F("HTTP/1.1 200 OK"));
                   incomingclient.println(F("Content-Type: text/html"));

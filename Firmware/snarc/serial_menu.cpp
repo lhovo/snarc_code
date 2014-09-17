@@ -112,7 +112,21 @@ void SERIAL_MENU::display(void)
                     Serial.println(F("Scan new card now"));
                     
                     // Wait for card to be read
-                    while(!RFID.read(&newCard.card)){}
+                   // while(!RFID.read(&newCard.card)){}
+                   
+                    newCard.card = 987654321;
+                    
+                   MEMORY.storeAccess(&newCard);
+     
+                     //--
+                     
+                     newCard.card = 542167890;
+                    
+                   MEMORY.storeAccess(&newCard);
+     
+                     //--
+                   
+                   newCard.card = 1234567890;
                     
                     if(MEMORY.storeAccess(&newCard))
                     {

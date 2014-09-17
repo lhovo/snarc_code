@@ -66,7 +66,7 @@ void setup()
 void loop()
 {
     LEDS.toggle(LEDS_WHITE, 2000);
-    //MENU.check();
+    MENU.check();
     
     if(RFID.read(&rfidTag))
     {
