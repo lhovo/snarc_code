@@ -48,7 +48,6 @@
  * -------------------------------------
  */
 
-#include <Time.h>
 #include "IPAddress.h"
 #include <inttypes.h>
 
