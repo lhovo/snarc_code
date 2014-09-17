@@ -21,7 +21,7 @@
 
 // ------ Define Board ------
 //#define SNARC_PLUS
-#define NETTROLL
+#define NETROL
 //#define SNARC
 
 // ------ Set RFID Input ------
@@ -113,7 +113,7 @@ extern DeviceInfo mySettings;
     #define LED_DEFINED 3
 
     #include "leds_generic.h"
-#elif defined NETTROLL
+#elif defined NETROL
     #define W5500_ETHERNET_SHIELD   // WIZ550io, ioShield series of WIZnet
 
     #define LEDS         generic_leds

@@ -326,30 +326,30 @@ private:
   static const uint16_t RSIZE = 2048; // Max Rx buffer size
 
 private:
-#if defined(ARDUINO_ARCH_AVR)
-#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284P__)
-  inline static void initSS()    { DDRB  |=  _BV(4); };
-  inline static void setSS()     { PORTB &= ~_BV(4); };
-  inline static void resetSS()   { PORTB |=  _BV(4); };
-#elif defined(__AVR_ATmega32U4__)
-  inline static void initSS()    { DDRB  |=  _BV(6); };
-  inline static void setSS()     { PORTB &= ~_BV(6); };
-  inline static void resetSS()   { PORTB |=  _BV(6); }; 
-#elif defined(__AVR_AT90USB1286__) || defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB162__)
-  inline static void initSS()    { DDRB  |=  _BV(0); };
-  inline static void setSS()     { PORTB &= ~_BV(0); };
-  inline static void resetSS()   { PORTB |=  _BV(0); }; 
-#elif defined(REL_GR_KURUMI) || defined(REL_GR_KURUMI_PROTOTYPE)
-  inline static void initSS()    { pinMode(SS, OUTPUT); \
-                                   digitalWrite(SS, HIGH); };
-  inline static void setSS()     { digitalWrite(SS, LOW); };
-  inline static void resetSS()   { digitalWrite(SS, HIGH); };
-#else
+//#if defined(ARDUINO_ARCH_AVR)
+//#if defined(__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_ATmega1284P__)
+//  inline static void initSS()    { DDRB  |=  _BV(4); };
+//  inline static void setSS()     { PORTB &= ~_BV(4); };
+//  inline static void resetSS()   { PORTB |=  _BV(4); };
+//#elif defined(__AVR_ATmega32U4__)
+//  inline static void initSS()    { DDRB  |=  _BV(6); };
+//  inline static void setSS()     { PORTB &= ~_BV(6); };
+//  inline static void resetSS()   { PORTB |=  _BV(6); };
+//#elif defined(__AVR_AT90USB1286__) || defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB162__)
+//  inline static void initSS()    { DDRB  |=  _BV(0); };
+//  inline static void setSS()     { PORTB &= ~_BV(0); };
+//  inline static void resetSS()   { PORTB |=  _BV(0); }; 
+//#elif defined(REL_GR_KURUMI) || defined(REL_GR_KURUMI_PROTOTYPE)
+//  inline static void initSS()    { pinMode(SS, OUTPUT); \
+//                                   digitalWrite(SS, HIGH); };
+//  inline static void setSS()     { digitalWrite(SS, LOW); };
+//  inline static void resetSS()   { digitalWrite(SS, HIGH); };
+//#else
   inline static void initSS()    { DDRD  |=  _BV(4); };
   inline static void setSS()     { PORTD &= ~_BV(4); };
   inline static void resetSS()   { PORTD |=  _BV(4); };
-#endif
-#endif // ARDUINO_ARCH_AVR
+//#endif
+//#endif // ARDUINO_ARCH_AVR
 };
 
 extern W5500Class W5100;
