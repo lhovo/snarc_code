@@ -32,6 +32,9 @@ char globalBuffer[GLOBAL_BUFFER_LEN];
 uint32_t timeUpdate = 0;
 #endif
 
+void userInterupt();
+int freeRam(void);
+
 void setup()
 {    
     LEDS.init();
