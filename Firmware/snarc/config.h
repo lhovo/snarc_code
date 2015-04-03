@@ -91,47 +91,47 @@ extern DeviceInfo mySettings;
 
 //#define W5100_ETHERNET_SHIELD // Arduino Ethenret Shield and Compatibles ...
 //#define W5200_ETHERNET_SHIELD // WIZ820io, W5200 Ethernet Shield
-//#define W5500_ETHERNET_SHIELD   // WIZ550io, ioShield series of WIZnet
+//#define W5500_ETHERNET_SHIELD // WIZ550io, ioShield series of WIZnet
 // --- SNARC_PLUS Board Config ---
 #ifdef SNARC_PLUS
     #define W5200_ETHERNET_SHIELD // WIZ820io, W5200 Ethernet Shield
 
-    #define LEDS         generic_leds
+    #define LEDS                generic_leds
 
-    #define DOOR_PIN           8
-    #define ETHERNET_CS        4
-    #define ETHERNET_RESET_PIN 7
+    #define DOOR_PIN            8
+    #define ETHERNET_CS         4
+    #define ETHERNET_RESET_PIN  7
 
-    #define INT_ETHERNET       0
-    #define INT_USER           1
+    #define INT_ETHERNET        0
+    #define INT_USER            1
 
-    #define LED_PIN_RED    10
-    #define LED_PIN_BLUE   9
-    #define LED_PIN_GREEN  6
+    #define LED_PIN_RED         10
+    #define LED_PIN_BLUE        9
+    #define LED_PIN_GREEN       6
 
-    #define LED_PINS    {LED_PIN_RED, LED_PIN_BLUE, LED_PIN_GREEN}
-    #define LED_DEFINED 3
+    #define LED_PINS            {LED_PIN_RED, LED_PIN_BLUE, LED_PIN_GREEN}
+    #define LED_DEFINED         3
 
     #include "leds_generic.h"
 #elif defined NETROL
     #define W5500_ETHERNET_SHIELD   // WIZ550io, ioShield series of WIZnet
 
-    #define LEDS         generic_leds
+    #define LEDS                generic_leds
 
-    #define DOOR_PIN           8
-    #define ETHERNET_CS        4
-    #define ETHERNET_RESET_PIN 7
+    #define DOOR_PIN            8
+    #define ETHERNET_CS         4
+    #define ETHERNET_RESET_PIN  7
 
-    #define INT_ETHERNET       0
-    #define INT_USER           1
+    #define INT_ETHERNET        0
+    #define INT_USER            1
 
-    #define LED_PIN_RED    10
-    #define LED_PIN_BLUE   9
-    #define LED_PIN_GREEN  6
+    #define LED_PIN_RED         10
+    #define LED_PIN_BLUE        9
+    #define LED_PIN_GREEN       6
+    #define LED_PIN_WHITE       5
 
-    #define LED_PIN_WHITE  5
-    #define LED_PINS    {LED_PIN_RED, LED_PIN_BLUE, LED_PIN_GREEN, LED_PIN_WHITE}
-    #define LED_DEFINED 4
+    #define LED_PINS            {LED_PIN_RED, LED_PIN_BLUE, LED_PIN_GREEN, LED_PIN_WHITE}
+    #define LED_DEFINED         4
 
     #include "leds_generic.h"
 #elif defined SNARC
@@ -142,17 +142,17 @@ extern DeviceInfo mySettings;
     #define DOOR_PIN            5
     #define ETHERNET_CS         10
     #define ETHERNET_RESET_PIN  8
-    #define WIZRESET ETHERNET_RESET_PIN // alternate name for same pin
+    #define WIZRESET            ETHERNET_RESET_PIN // alternate name for same pin
     
-    #define INT_ETHERNET       0
-    #define INT_USER           1
+    #define INT_ETHERNET        0
+    #define INT_USER            1
     
-    #define LED_PIN_RED    17
-    #define LED_PIN_YELLOW 18
-    #define LED_PIN_GREEN  19
+    #define LED_PIN_RED         17
+    #define LED_PIN_YELLOW      18
+    #define LED_PIN_GREEN       19
     
-    #define LED_PINS    {LED_PIN_RED, LED_PIN_YELLOW, LED_PIN_GREEN}
-    #define LED_DEFINED 3
+    #define LED_PINS            {LED_PIN_RED, LED_PIN_YELLOW, LED_PIN_GREEN}
+    #define LED_DEFINED         3
 
     #include "leds_generic.h"
 #else
@@ -177,10 +177,6 @@ extern DeviceInfo mySettings;
 #ifdef USE_EEPROM
     #include "memory_eeprom.h"
     #define MEMORY eepromMemory
-#elif defined USE_FLASH_AT45DB
-    #define MEMORY_FLASH_AT45DB_CS 10
-    #include "memory_flash_at45db.h"
-    #define MEMORY MEMORY_FLASH_AT45DB
 #else
     #error NO MEMORY DEFINED
 #endif

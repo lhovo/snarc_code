@@ -42,45 +42,15 @@ void SERIAL_MENU::init(int baud)
   state = START;
 }
 
-// Check for +++, then enter program mode..
-void SERIAL_MENU::check(void)
-{
-    if (Serial.available())
-    {
-        switch(state)
-        {
-            case START:
-            case PLUS1:
-                if (Serial.read() == '+')
-                {
-                    state++;
-                }
-                else
-                {
-                    state = START;
-                }
-                break;
-            case PLUS2:
-                state = START;
-                if (Serial.read() == '+')
-                {
-                    display();
-                }
-                break;
-        }
-    }
-}
-
 void SERIAL_MENU::display(void)
 {
     char incomingByte = 0;
     DeviceInfo   mySettings;
-    RFID_info    newCard;
     IPAddress    tempIP;
-    
+  
     MEMORY.getNetworkInfo(&mySettings);
     changesMade = false;
-    
+  
     LEDS.off(LEDS_ALL);
     clear_serial_buffer();
     Serial.println(F("Entered Programming Mode! "));
@@ -97,136 +67,63 @@ void SERIAL_MENU::display(void)
             
             switch((char)incomingByte)
             {
-              
-                // Read current list from EEPROM cache
-                //case 'c':  // cards
                 case 'r':  // 'r'ead cards
-                    Serial.println(F("Card list.."));
-                    MEMORY.printAccessList();
-                    break;
-                                   
-                // Write new code to MEMORY
-                // the next key scanned will be saved
-                //case 'k':
-                case 'n': // add 'new' card:
-                    Serial.println(F("Scan new card now"));
-                    
-                    // Wait for card to be read
-                    while(!RFID.read(&newCard.card)){}
-                    
-                    if(MEMORY.storeAccess(&newCard))
-                    {
-                        Serial.print(F("-- "));
-                        Serial.print(newCard.card);
-                        Serial.println(F(" STORED --"));
-                    }
-                    else
-                    {
-                        Serial.println(F("ERROR ADDING CARD!"));  
-                    }
+                    readCards();
                     break;
                 
-                // Erase/Initialise all MEMORY
-                case 'i':
-                    MEMORY.erase();
-                    Serial.println(F("Memory Erase complete.."));
+//                case 'n': // add 'new' card:
+//                    newCard();
+//                    break;
+                
+                case 'i': // Erase/Initialise all MEMORY
+                    initMemory();
                     break;
                 
-                //  w means "write" hard-coded LIST ( from to EEPROM cache - undocumented command for initial population of eeprom
-                case 'w':    
-                    Serial.println(F("please wait, writing new codes list...."));
-
-                    //write_codes_to_eeprom(); // TODO
-                    Serial.print(F("address:"));
-                    //Serial.println(last_address);
-                    prompt();
-                break;
-                
-                // Expire a cards, typed or scanned
-                case 'z':
-                    
-                    if(MEMORY.expireAccess())
-                    {
-                        Serial.println(F("-- ALL CARDS REMOVED --")); 
-                    }
-                    break;
-                
-                // Ask server for card update
-                case 'u':
-                    Serial.println(F("Updating card list"));
-                    //Serial.println(send_to_server("1234567890", 0));
+                case 'x': // Expire all cards
+                    xpireCards();
                     break;
                 
                 // --------------  Server update functions -------------- //
                 // ---  These need to be saved after updating them ------ //
                 
-                // Set Device Name
-                case 'd':
+                case 'd': // Set Device Name
                     listen_for_device_name(mySettings.deviceName);
                     break;
-                
-                // Set Device Id
-                case 't':
+
+                case 't': // Set Device Zone
                     listen_for_device_id(&mySettings.id);
                     break;
                 
-                // Set Mac Address
-                case 'm':
-                    Serial.println(F("disabled in implementation sorry ( buggy ) , use hardcode MACs only."));
-                    // TODO: Implement IP address change
-                    // set MAC address
-                    //listen_for_new_mac_address();
-                    mySettings.mac[0] = 0x02;
-                    mySettings.mac[1] = 0x08;
-                    mySettings.mac[2] = 0xDC;
-                    // NIC (Network Interface Controller)
-                    mySettings.mac[3] = 0xEF;
-                    mySettings.mac[4] = 0xFE;
-                    mySettings.mac[5] = 0xED;
-                    changesMade = true;
-                    break;
-                
-                // Set Ip Address
-                case 'b':
+                case 'b': // Set Ip Address
                     tempIP = mySettings.ip;
                     listen_for_ipaddress(&tempIP);
                     mySettings.ip = tempIP;
                     break;
                 
-                // Set Gateway Address
-                case 'g':
+                case 'g': // Set Gateway Address
                     tempIP = mySettings.gateway;
                     listen_for_ipaddress(&tempIP);
                     mySettings.gateway = tempIP;
                     break;
 
-                // Set Subnet Address
-                case 'k':
+                case 'k': // Set Subnet Address
                     tempIP = mySettings.subnet;
                     listen_for_ipaddress(&tempIP);
                     mySettings.subnet = tempIP;
                     break;
-                    
-                // Set Server Address
-                case 'a':
+                
+                case 'a': // Set Server Address
                     tempIP = mySettings.server;
                     listen_for_ipaddress(&tempIP);
                     mySettings.server = tempIP;
                     break;
-                    
-                // Save Changed data
-                case 's':
-                    if(changesMade)
-                    {
-                       MEMORY.storeNetworkInfo(&mySettings); 
-                       changesMade = false;
-                       Serial.println(F("Changes Saved.."));
-                       Serial.println(F("Reset device for settings to take effect"));
-                    }
-                    else
-                    {
-                       Serial.println(F("No changes made.."));
-                    }
+                
+                case 'm': // Set Mac Address
+                    macAddr();
+                    break;
+                
+                case 's': // Save Changed data
+                    save();
                     break;
 
                 case 'p':
@@ -237,9 +134,8 @@ void SERIAL_MENU::display(void)
                     ETHERNET.print_settings();
                     break;
 
-                // x mean exit programming mode, and resume normal behaviour
-                case 'x':
-                    incomingByte = -1; // exit this mode
+                case 'q': // q mean quit programming mode, and resume normal behaviour
+                    incomingByte = -1;
                     break;
                 
                 // ignore whitespace
@@ -272,32 +168,137 @@ void SERIAL_MENU::prompt(void)
     Serial.println(F("\nPROGRAM MODE:"));
     //Serial.println(F("For Command List goto: https://github.com/HSBNE/snarc_code"));
     Serial.println(F("r - print card list"));
-    Serial.println(F("k - program new key to MEMORY"));
-    Serial.println(F("z - expire a single card from MEMORY"));
-    Serial.println(F("u - Ask server to give us a card update"));
-    Serial.println(F("w - write card list to MEMORY"));
+//    Serial.println(F("n - program new key to MEMORY"));
+    Serial.println(F("z - expire all cards from MEMORY"));
     Serial.println(F("i - wipe and initialise EEPROM (dangerous!) \n"));
     
     Serial.println(F("-- Options below need to be saved after change --"));
     Serial.println(F("d - set device name"));
-    Serial.println(F("t - set device identification"));
-    Serial.println(F("m - set MAC address"));
+    Serial.println(F("t - set device zone"));
+    //Serial.println(F("m - set MAC address"));
     Serial.println(F("b - set IP address"));
     Serial.println(F("g - set gateway address"));
-    Serial.println(F("n - set subnet address"));
+    Serial.println(F("k - set subnet address"));
     //Serial.println(F("e - set DNS address")); // -- Not supported yet -- //
     Serial.println(F("a - set server address"));
     Serial.println(F("s - save changes"));
     Serial.println(F("p - print node config"));
     Serial.println(F("e - print loaded ethernet settings\n"));
     
-    Serial.println(F("x - exit programming mode"));
+    Serial.println(F("q - quit programming mode"));
+}
+
+// Check for +++, then enter program mode..
+void SERIAL_MENU::check(void)
+{
+  if (Serial.available())
+  {
+    switch(state)
+    {
+      case START:
+      case PLUS1:
+        if (Serial.read() == '+')
+        {
+          state++;
+        }
+        else
+        {
+          state = START;
+        }
+        break;
+      case PLUS2:
+        state = START;
+        if (Serial.read() == '+')
+        {
+          display();
+        }
+        break;
+    }
+  }
+}
+
+// Read current list from EEPROM cache
+void SERIAL_MENU::readCards(void)
+{
+  Serial.println(F("Card list.."));
+  MEMORY.printAccessList();
+}
+
+// Write new code to MEMORY
+// the next key scanned will be saved
+void SERIAL_MENU::newCard(void)
+{
+  RFID_info    newCard;
+  
+  Serial.println(F("Scan new card now"));
+  
+  // Wait for card to be read
+  while(!RFID.read(&newCard.card)){}
+  
+  if(MEMORY.storeAccess(&newCard))
+  {
+    Serial.print(F("-- "));
+    Serial.print(newCard.card);
+    Serial.println(F(" STORED --"));
+  }
+  else
+  {
+    Serial.println(F("ERROR ADDING CARD!"));
+  }
+}
+
+// Erase/Initialise all MEMORY
+void SERIAL_MENU::initMemory(void)
+{
+  MEMORY.erase();
+  Serial.println(F("Memory Erase complete.."));
+}
+
+// Expire all cards
+void SERIAL_MENU::xpireCards(void)
+{
+  if(MEMORY.expireAccess())
+  {
+    Serial.println(F("-- ALL CARDS REMOVED --"));
+  }
+}
+
+// Set Mac Address
+void SERIAL_MENU::macAddr(void)
+{
+  Serial.println(F("disabled in implementation sorry ( buggy ) , use hardcode MACs only."));
+  //// TODO: set MAC address
+  ////listen_for_new_mac_address();
+  //mySettings.mac[0] = 0x02;
+  //mySettings.mac[1] = 0x08;
+  //mySettings.mac[2] = 0xDC;
+  //// NIC (Network Interface Controller)
+  //mySettings.mac[3] = 0xEF;
+  //mySettings.mac[4] = 0xFE;
+  //mySettings.mac[5] = 0xED;
+  //changesMade = true;
+}
+
+// Save Changed data
+void SERIAL_MENU::save(void)
+{
+  if(changesMade)
+  {
+    MEMORY.storeNetworkInfo(&mySettings);
+    changesMade = false;
+    Serial.println(F("Changes Saved.."));
+    Serial.println(F("Reset device for settings to take effect"));
+  }
+  else
+  {
+    Serial.println(F("No changes made.."));
+  }
 }
 
 void SERIAL_MENU::print_node_config(DeviceInfo *settings)
 {
     Serial.println(F("---------------- Local config ----------------"));
-    
+  
     Serial.print(F("Device Name: "));
     Serial.println((String) settings->deviceName);
 

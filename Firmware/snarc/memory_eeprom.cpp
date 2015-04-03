@@ -165,7 +165,7 @@ void MEMORY_EEPROM::defaultOutput(boolean isStart)
     }
 }
 
-// Find if card is in memory, if so update the time, if not add it.
+// Find if card is in memory, if not add it.
 bool MEMORY_EEPROM::storeAccess(RFID_info *access)
 {
     unsigned int i,j;
@@ -182,11 +182,11 @@ bool MEMORY_EEPROM::storeAccess(RFID_info *access)
         {
             if(entry.card == access->card)
             {
-                // Write new data to the same location
-                for(j=sizeof(entry.card);j<MEMORY_RFID_LENGTH;j++)
-                {
-                    EEPROM.write(i+j, ((byte*) access)[j]);
-                }
+//                // Write new data to the same location
+//                for(j=sizeof(entry.card);j<MEMORY_RFID_LENGTH;j++)
+//                {
+//                    EEPROM.write(i+j, ((byte*) access)[j]);
+//                }
                 return true;
             }
         }
@@ -203,7 +203,7 @@ bool MEMORY_EEPROM::storeAccess(RFID_info *access)
     return false;
 }
 
-// Returns true if card is valid and hasn't expired
+// Returns true if card is valid
 bool MEMORY_EEPROM::accessAllowed(unsigned long *rfid)
 {
     unsigned int i,j;
@@ -263,7 +263,7 @@ void MEMORY_EEPROM::printAccessList(void)
         }
         else
         {
-            break;
+            return;
         }
     }
 }
